@@ -1,12 +1,12 @@
-/* Website redesign */
+/* Website redesign - Dark Mode & Red Theme */
 $vivid-tangerine: #f1a695;
 $ceil: #9597c9;
 $caramel: #f9d38f;
-$dark-jungle-green: #0f271a;
+$dark-jungle-green: #1a0a0a;
 $sapphire-blue: #4354a3;
 $sapphire-blue-dark: #3c4c93;
 $purple-bright: #939aff;
-$green-bright: #13c965;
+$green-bright: #dc2626;
 
 :root {
   --vivid-tangerine: #{$vivid-tangerine};
@@ -17,4 +17,5 @@ $green-bright: #13c965;
   --sapphire-blue-dark: #{$sapphire-blue-dark};
   --green-bright: #{$green-bright};
   --purple-bright: #{$purple-bright};
+  --red-bright: #{$green-bright};
 }

@@ -92,6 +92,23 @@ const AdminController = {
       res.redirect('/admin#system-messages')
     })
   },
+
+  about(req, res) {
+    // TODO: Get version from package.json, or maybe use git commit hash?
+
+    let version = 'Unknown'
+    try {
+      version = process.env.OVERLEAF_VERSION || Settings.version || 'Community Edition'
+    } catch (error) {
+      logger.error({ error }, 'Error getting version information')
+    }
+
+    res.render('admin/about', {
+      title: 'About',
+      version,
+      nodeVersion: process.version,
+    })
+  },
 }
 
 export default AdminController

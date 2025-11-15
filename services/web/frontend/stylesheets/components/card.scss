@@ -42,6 +42,33 @@
     }
   }
 
+  &.card-dark-red-bg {
+    background: var(--dark-jungle-green);
+    border-radius: var(--border-radius-large);
+    color: #ffe5e5;
+
+    .card-body {
+      padding: var(--spacing-09);
+    }
+
+    a:not(.btn) {
+      color: var(--green-30);
+
+      &:hover {
+        color: var(--green-40);
+      }
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    p {
+      color: #ffe5e5;
+    }
+  }
+
   &.card-purple-top-border {
     background-color: white;
     border-radius: var(--border-radius-medium);
@@ -194,6 +221,16 @@
     }
   }
 
+  &.card-red-border {
+    background-color: white;
+    border-radius: var(--border-radius-medium);
+    border: 2px solid var(--green-50);
+
+    .card-body {
+      padding: var(--spacing-09);
+    }
+  }
+
   .card-icon-left {
     width: 52px;
     height: 56px;
@@ -213,6 +250,34 @@
 
   .card-body {
     padding: var(--spacing-10) var(--spacing-09);
+  }
+}
+
+/* Dark theme override for cards */
+.dark-theme-marketing {
+  .card {
+    --bs-card-bg: var(--neutral-20);
+    background-color: var(--neutral-20);
+  }
+  
+  .card-purple-top-border,
+  .card-premium-border,
+  .card-blue-border,
+  .card-grey-border,
+  .card-green-border,
+  .card-red-border {
+    background-color: var(--neutral-20);
+  }
+  
+  .card-premium-border {
+    background:
+      linear-gradient(var(--neutral-20), var(--neutral-20)) padding-box,
+      linear-gradient(to right, var(--blue-40), #254c84, var(--blue-70)) border-box;
+  }
+  
+  .card-gray,
+  .card-gray-dark {
+    background-color: var(--neutral-20);
   }
 }
 

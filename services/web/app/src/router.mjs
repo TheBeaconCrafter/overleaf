@@ -1034,6 +1034,12 @@ async function initialize(webRouter, privateApiRouter, publicApiRouter) {
     AdminController.index
   )
 
+  webRouter.get(
+    '/admin/about',
+    AuthorizationMiddleware.ensureUserIsSiteAdmin,
+    AdminController.about
+  )
+
   if (!Features.hasFeature('saas')) {
     webRouter.post(
       '/admin/openEditor',

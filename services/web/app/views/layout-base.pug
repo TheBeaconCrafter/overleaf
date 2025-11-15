@@ -98,11 +98,23 @@ html(
 
 		block head-scripts
 
+	-
+		// Check cookie for theme preference
+		function getThemeFromCookie() {
+			if (typeof req !== 'undefined' && req.cookies && req.cookies.overleaf_theme) {
+				return req.cookies.overleaf_theme;
+			}
+			// Default to dark for marketing pages
+			return (entrypoint === 'marketing') ? 'dark' : 'light';
+		}
+		const cookieTheme = getThemeFromCookie();
+		const isDarkTheme = (cookieTheme === 'dark' && entrypoint === 'marketing');
 	body(
 		class={
 			'thin-footer': showThinFooter,
 			'website-redesign': isWebsiteRedesign === true || websiteRedesignOverride,
 			'application-page': isApplicationPage,
+			'dark-theme-marketing': isDarkTheme,
 		}
 		data-theme='default'
 	)

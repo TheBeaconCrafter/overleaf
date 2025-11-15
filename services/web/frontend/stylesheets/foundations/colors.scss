@@ -7,7 +7,7 @@
 
 /* ====== Sass color variables ====== */
 
-/* Neutral */
+/* Neutral - Light theme (default for editor) */
 $white: #fff;
 $neutral-10: #f4f5f6;
 $neutral-20: #e7e9ee;
@@ -19,14 +19,25 @@ $neutral-70: #495365;
 $neutral-80: #2f3a4c;
 $neutral-90: #1b222c;
 
-/* Green */
-$green-10: #eaf6ef;
-$green-20: #b8dbc8;
-$green-30: #86caa5;
-$green-40: #53b57f;
-$green-50: #098842;
-$green-60: #1e6b41;
-$green-70: #195936;
+/* Dark Mode Overrides */
+$dark-neutral-10: #1e1e1e;
+$dark-neutral-20: #2a2a2a;
+$dark-neutral-30: #3a3a3a;
+$dark-neutral-40: #4a4a4a;
+$dark-neutral-50: #6a6a6a;
+$dark-neutral-60: #8a8a8a;
+$dark-neutral-70: #aaaaaa;
+$dark-neutral-80: #cccccc;
+$dark-neutral-90: #e5e5e5;
+
+/* Red */
+$green-10: #ffe5e5;
+$green-20: #ffb3b3;
+$green-30: #ff8080;
+$green-40: #ff4d4d;
+$green-50: #dc2626;
+$green-60: #b91c1c;
+$green-70: #991b1b;
 
 /* Blue */
 $blue-10: #f1f4f9;
@@ -131,7 +142,7 @@ $link-ui-visited-dark: $blue-40;
   --neutral-80: #{$neutral-80};
   --neutral-90: #{$neutral-90};
 
-  /* Green */
+  /* Red (replacing green for theme) */
   --green-10: #{$green-10};
   --green-20: #{$green-20};
   --green-30: #{$green-30};
@@ -243,4 +254,44 @@ $link-ui-visited-dark: $blue-40;
     #8ea3d7 29%,
     #ccdcff 97%
   );
+}
+
+/* ====== Dark Mode Overrides for Marketing Pages ====== */
+body.dark-theme-marketing,
+.dark-theme-marketing {
+  --neutral-10: #{$dark-neutral-10};
+  --neutral-20: #{$dark-neutral-20};
+  --neutral-30: #{$dark-neutral-30};
+  --neutral-40: #{$dark-neutral-40};
+  --neutral-50: #{$dark-neutral-50};
+  --neutral-60: #{$dark-neutral-60};
+  --neutral-70: #{$dark-neutral-70};
+  --neutral-80: #{$dark-neutral-80};
+  --neutral-90: #{$dark-neutral-90};
+
+  --bg-light-primary: #{$dark-neutral-10};
+  --bg-light-secondary: #{$dark-neutral-20};
+  --bg-light-tertiary: #{$dark-neutral-30};
+  --bg-light-disabled: #{$dark-neutral-30};
+  
+  --content-primary: #{$white};
+  --content-secondary: #{$dark-neutral-70};
+  --content-disabled: #{$dark-neutral-50};
+  --content-placeholder: #{$dark-neutral-60};
+
+  --border-primary: #{$dark-neutral-40};
+  --border-hover: #{$dark-neutral-50};
+  --border-disabled: #{$dark-neutral-30};
+  --border-divider: #{$dark-neutral-30};
+  
+  --link-web: var(--green-40);
+  --link-web-hover: var(--green-30);
+  --link-web-visited: var(--green-40);
+  
+  --bs-card-bg: #{$dark-neutral-20};
+  --bs-body-bg: #{$dark-neutral-10};
+  --bs-body-color: #{$white};
+  
+  background-color: #{$dark-neutral-10};
+  color: #{$white};
 }

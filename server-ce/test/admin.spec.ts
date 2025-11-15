@@ -142,7 +142,12 @@ describe('admin panel', function () {
       })
 
       it('displays expected admin menu items', () => {
-        const menuitems = ['Manage Site', 'Manage Users', 'Project URL Lookup']
+        const menuitems = [
+          'Manage Site',
+          'Manage Users',
+          'Project URL Lookup',
+          'About',
+        ]
         menuitems.forEach(name => {
           cy.findByRole('menuitem', { name: 'Admin' }).click()
           cy.get('ul[role="menu"]')
