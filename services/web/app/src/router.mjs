@@ -1039,6 +1039,26 @@ async function initialize(webRouter, privateApiRouter, publicApiRouter) {
     AuthorizationMiddleware.ensureUserIsSiteAdmin,
     AdminController.about
   )
+  webRouter.get(
+    '/admin/users',
+    AuthorizationMiddleware.ensureUserIsSiteAdmin,
+    AdminController.activeUsers
+  )
+  webRouter.post(
+    '/admin/users/:userId/password-reset',
+    AuthorizationMiddleware.ensureUserIsSiteAdmin,
+    AdminController.sendPasswordReset
+  )
+  webRouter.post(
+    '/admin/users/:userId/change-email',
+    AuthorizationMiddleware.ensureUserIsSiteAdmin,
+    AdminController.changeUserEmail
+  )
+  webRouter.delete(
+    '/admin/users/:userId',
+    AuthorizationMiddleware.ensureUserIsSiteAdmin,
+    AdminController.deleteUserByAdmin
+  )
 
   if (!Features.hasFeature('saas')) {
     webRouter.post(

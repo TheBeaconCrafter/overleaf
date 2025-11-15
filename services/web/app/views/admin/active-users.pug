@@ -1,0 +1,389 @@
+extends ../layout-marketing
+
+block append foot-scripts
+	script(nonce=scriptNonce).
+		document.addEventListener('DOMContentLoaded', function() {
+			console.log('[Admin Active Users] Page loaded, initializing...');
+			
+			// CSRF token from server
+			const csrfToken = !{JSON.stringify(csrfToken)};
+			
+			let currentUserId = null;
+			let currentUserEmail = null;
+			
+			// Initialize Bootstrap 5 modals
+			console.log('[Admin Active Users] Checking Bootstrap availability...');
+			if (typeof bootstrap === 'undefined') {
+				console.error('[Admin Active Users] Bootstrap is not loaded! Modals will not work.');
+				alert('Bootstrap library is not loaded. Please refresh the page or contact support.');
+				return;
+			}
+			
+			console.log('[Admin Active Users] Bootstrap detected, initializing modals...');
+			const resetUrlModalEl = document.getElementById('resetUrlModal');
+			const changeEmailModalEl = document.getElementById('changeEmailModal');
+			const deleteUserModalEl = document.getElementById('deleteUserModal');
+			
+			if (!resetUrlModalEl || !changeEmailModalEl || !deleteUserModalEl) {
+				console.error('[Admin Active Users] Modal elements not found in DOM');
+				return;
+			}
+			
+			const resetUrlModal = new bootstrap.Modal(resetUrlModalEl);
+			const changeEmailModal = new bootstrap.Modal(changeEmailModalEl);
+			const deleteUserModal = new bootstrap.Modal(deleteUserModalEl);
+			
+			console.log('[Admin Active Users] Modals initialized successfully');
+
+			// Send Password Reset - Generate and Display Link
+			const resetButtons = document.querySelectorAll('.send-reset-btn');
+			console.log('[Admin Active Users] Found ' + resetButtons.length + ' reset password buttons');
+			
+			resetButtons.forEach(btn => {
+				btn.addEventListener('click', function() {
+					console.log('[Admin Active Users] Reset password button clicked');
+					const userId = this.dataset.userId;
+					const userEmail = this.dataset.userEmail;
+					
+					const originalHTML = btn.innerHTML;
+					btn.disabled = true;
+					btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Generating...';
+					
+					fetch(`/admin/users/${userId}/password-reset`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-CSRF-Token': csrfToken
+						}
+					})
+					.then(res => {
+						if (!res.ok) {
+							throw new Error('HTTP ' + res.status + ': ' + res.statusText);
+						}
+						return res.json();
+					})
+					.then(data => {
+						if (data.success && data.resetUrl) {
+							console.log('[Admin Active Users] Reset URL generated, showing modal');
+							// Show modal with reset URL
+							document.getElementById('reset-user-email').textContent = userEmail;
+							document.getElementById('reset-url-display').value = data.resetUrl;
+							resetUrlModal.show();
+						} else {
+							alert('Error: ' + (data.error || 'Unknown error'));
+						}
+						btn.innerHTML = originalHTML;
+						btn.disabled = false;
+					})
+					.catch(err => {
+						console.error('[Admin Active Users] Reset password error:', err);
+						alert('Failed to generate password reset link: ' + err.message);
+						btn.innerHTML = originalHTML;
+						btn.disabled = false;
+					});
+				});
+			});
+
+			// Copy reset URL to clipboard
+			document.getElementById('copy-reset-url').addEventListener('click', function() {
+				const textarea = document.getElementById('reset-url-display');
+				textarea.select();
+				textarea.setSelectionRange(0, 99999); // For mobile
+				
+				try {
+					document.execCommand('copy');
+					const originalHTML = this.innerHTML;
+					this.innerHTML = '<i class="fa fa-check"></i> Copied!';
+					this.classList.remove('btn-primary');
+					this.classList.add('btn-success');
+					
+					setTimeout(() => {
+						this.innerHTML = originalHTML;
+						this.classList.remove('btn-success');
+						this.classList.add('btn-primary');
+					}, 2000);
+				} catch (err) {
+					alert('Failed to copy: ' + err.message);
+				}
+			});
+
+			// Change Email
+			const changeEmailButtons = document.querySelectorAll('.change-email-btn');
+			console.log('[Admin Active Users] Found ' + changeEmailButtons.length + ' change email buttons');
+			
+			changeEmailButtons.forEach(btn => {
+				btn.addEventListener('click', function() {
+					console.log('[Admin Active Users] Change email button clicked');
+					currentUserId = this.dataset.userId;
+					currentUserEmail = this.dataset.userEmail;
+					document.getElementById('current-email-display').textContent = currentUserEmail;
+					document.getElementById('new-email').value = '';
+					changeEmailModal.show();
+				});
+			});
+
+			const confirmChangeEmailBtn = document.getElementById('confirm-change-email');
+			if (confirmChangeEmailBtn) {
+				confirmChangeEmailBtn.addEventListener('click', function() {
+					console.log('[Admin Active Users] Confirm change email clicked');
+					const newEmail = document.getElementById('new-email').value.trim();
+					
+					if (!newEmail || !newEmail.includes('@')) {
+						alert('Please enter a valid email address');
+						return;
+					}
+					
+					const originalHTML = this.innerHTML;
+					this.disabled = true;
+					this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Changing...';
+					
+					fetch(`/admin/users/${currentUserId}/change-email`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-CSRF-Token': csrfToken
+						},
+						body: JSON.stringify({ newEmail })
+					})
+					.then(res => {
+						if (!res.ok) {
+							throw new Error('HTTP ' + res.status + ': ' + res.statusText);
+						}
+						return res.json();
+					})
+					.then(data => {
+						if (data.success) {
+							console.log('[Admin Active Users] Email changed successfully');
+							alert('Email changed successfully!');
+							changeEmailModal.hide();
+							location.reload();
+						} else {
+							alert('Error: ' + (data.error || 'Unknown error'));
+							this.disabled = false;
+							this.innerHTML = originalHTML;
+						}
+					})
+					.catch(err => {
+						console.error('[Admin Active Users] Change email error:', err);
+						alert('Failed to change email: ' + err.message);
+						this.disabled = false;
+						this.innerHTML = originalHTML;
+					});
+				});
+			} else {
+				console.error('[Admin Active Users] Confirm change email button not found');
+			}
+
+			// Delete User
+			const deleteUserButtons = document.querySelectorAll('.delete-user-btn');
+			console.log('[Admin Active Users] Found ' + deleteUserButtons.length + ' delete user buttons');
+			
+			deleteUserButtons.forEach(btn => {
+				btn.addEventListener('click', function() {
+					console.log('[Admin Active Users] Delete user button clicked');
+					currentUserId = this.dataset.userId;
+					currentUserEmail = this.dataset.userEmail;
+					document.getElementById('delete-user-email').textContent = currentUserEmail;
+					deleteUserModal.show();
+				});
+			});
+
+			const confirmDeleteBtn = document.getElementById('confirm-delete-user');
+			if (confirmDeleteBtn) {
+				confirmDeleteBtn.addEventListener('click', function() {
+					console.log('[Admin Active Users] Confirm delete clicked');
+					const originalHTML = this.innerHTML;
+					this.disabled = true;
+					this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Deleting...';
+					
+					fetch(`/admin/users/${currentUserId}`, {
+						method: 'DELETE',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-CSRF-Token': csrfToken
+						}
+					})
+					.then(res => {
+						if (!res.ok) {
+							throw new Error('HTTP ' + res.status + ': ' + res.statusText);
+						}
+						return res.json();
+					})
+					.then(data => {
+						if (data.success) {
+							console.log('[Admin Active Users] User deleted successfully');
+							alert('User deleted successfully!');
+							deleteUserModal.hide();
+							location.reload();
+						} else {
+							alert('Error: ' + (data.error || 'Unknown error'));
+							this.disabled = false;
+							this.innerHTML = originalHTML;
+						}
+					})
+					.catch(err => {
+						console.error('[Admin Active Users] Delete user error:', err);
+						alert('Failed to delete user: ' + err.message);
+						this.disabled = false;
+						this.innerHTML = originalHTML;
+					});
+				});
+			} else {
+				console.error('[Admin Active Users] Confirm delete button not found');
+			}
+			
+			console.log('[Admin Active Users] All event listeners attached successfully');
+		});
+
+block content
+	.content.content-alt
+		.container
+			.row
+				.col-md-12
+					.card
+						.card-body
+							h1 Active Users Monitoring
+							
+							.alert.alert-info(style='margin-top: 20px;')
+								strong Total Online Users: #{onlineCount}
+							
+							.d-flex.justify-content-between.align-items-center(style='margin: 20px 0;')
+								p.text-muted Showing all registered users
+								a.btn.btn-primary(href='/admin/users' onclick='window.location.reload(); return false;')
+									i.fa.fa-refresh(style='margin-right: 5px;')
+									| Refresh
+							
+							if users && users.length > 0
+								.table-responsive
+									table.table.table-striped.table-hover#users-table
+										thead
+											tr
+												th(style='width: 50px;') Status
+												th Email
+												th Name
+												th Current Project
+												th Storage Used
+												th(style='width: 280px;') Actions
+										tbody
+											each user in users
+												tr(data-user-id=user._id)
+													td
+														if user.isOnline
+															span.badge.bg-success(title='Online') ●
+														else
+															span.badge.bg-secondary(title='Offline') ●
+													td= user.email
+													td= (user.first_name || '') + ' ' + (user.last_name || '')
+													td
+														if user.currentProject
+															a(href=`/project/${user.currentProject.id}` target='_blank')= user.currentProject.name
+														else
+															span.text-muted -
+													td
+														- const kb = (user.storageUsed / 1024).toFixed(2)
+														- const mb = (user.storageUsed / (1024 * 1024)).toFixed(2)
+														if user.storageUsed > 1048576
+															= mb + ' MB'
+														else if user.storageUsed > 1024
+															= kb + ' KB'
+														else
+															= user.storageUsed + ' B'
+													td
+														.d-flex.gap-1.flex-wrap
+															button.btn.btn-sm.btn-warning.send-reset-btn(
+																type='button'
+																data-user-id=user._id
+																data-user-email=user.email
+																title='Generate Password Reset Link'
+															)
+																i.fa.fa-key(style='margin-right: 4px;')
+																| Reset
+															button.btn.btn-sm.btn-info.change-email-btn(
+																type='button'
+																data-user-id=user._id
+																data-user-email=user.email
+																title='Change User Email'
+															)
+																i.fa.fa-envelope(style='margin-right: 4px;')
+																| Email
+															button.btn.btn-sm.btn-danger.delete-user-btn(
+																type='button'
+																data-user-id=user._id
+																data-user-email=user.email
+																title='Delete User and All Projects'
+															)
+																i.fa.fa-trash(style='margin-right: 4px;')
+																| Delete
+							else
+								.alert.alert-warning No users found in the database.
+							
+							.text-muted(style='margin-top: 20px; font-size: 0.9em;')
+								p 
+									strong Note: 
+									| Online status is determined by active sessions. 
+									| Current project information shows users actively editing projects.
+									| Storage usage is calculated from project document sizes.
+									br
+									strong Warning: 
+									| Admin actions (password reset, email change, delete) are powerful operations. Use with caution!
+
+	//- Modal for password reset URL display
+	#resetUrlModal.modal.fade(tabindex='-1' role='dialog')
+		.modal-dialog.modal-lg(role='document')
+			.modal-content
+				.modal-header
+					h5.modal-title Password Reset Link
+					button.close(type='button' data-dismiss='modal' aria-label='Close')
+						span(aria-hidden='true') ×
+				.modal-body
+					p Send this link to: 
+						strong#reset-user-email
+					.form-group
+						label Reset URL (expires in 24 hours):
+						textarea#reset-url-display.form-control(rows='4' readonly style='font-family: monospace; font-size: 12px;')
+				.modal-footer
+					button#copy-reset-url.btn.btn-primary(type='button')
+						i.fa.fa-copy(style='margin-right: 5px;')
+						| Copy to Clipboard
+					button.btn.btn-secondary(type='button' data-dismiss='modal') Close
+
+	//- Modal for change email
+	#changeEmailModal.modal.fade(tabindex='-1' role='dialog')
+		.modal-dialog(role='document')
+			.modal-content
+				.modal-header
+					h5.modal-title Change User Email
+					button.close(type='button' data-dismiss='modal' aria-label='Close')
+						span(aria-hidden='true') ×
+				.modal-body
+					p Current email: 
+						strong#current-email-display
+					.form-group
+						label(for='new-email') New Email Address
+						input#new-email.form-control(type='email' placeholder='user@example.com' required)
+				.modal-footer
+					button.btn.btn-secondary(type='button' data-dismiss='modal') Cancel
+					button#confirm-change-email.btn.btn-primary(type='button') Change Email
+
+	//- Modal for delete confirmation
+	#deleteUserModal.modal.fade(tabindex='-1' role='dialog')
+		.modal-dialog(role='document')
+			.modal-content
+				.modal-header.bg-danger.text-white
+					h5.modal-title Delete User
+					button.close.text-white(type='button' data-dismiss='modal' aria-label='Close')
+						span(aria-hidden='true') ×
+				.modal-body
+					p.text-danger
+						strong WARNING: This action cannot be undone!
+					p You are about to delete user: 
+						strong#delete-user-email
+					p This will:
+					ul
+						li Delete all user projects
+						li Remove the user account
+						li Send a deletion email to the user
+				.modal-footer
+					button.btn.btn-secondary(type='button' data-dismiss='modal') Cancel
+					button#confirm-delete-user.btn.btn-danger(type='button') Delete User
+

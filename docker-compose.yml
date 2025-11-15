@@ -23,8 +23,8 @@ services:
             ########################################################################
             # - /var/run/docker.sock:/var/run/docker.sock
         environment:
-
-            OVERLEAF_APP_NAME: Beacon Overleaf
+        
+            OVERLEAF_APP_NAME: Beaconleaf
 
             OVERLEAF_MONGO_URL: mongodb://mongo/sharelatex
 
@@ -45,13 +45,13 @@ services:
             #VIRTUAL_HOST: 103.112.212.22
 
             OVERLEAF_SITE_URL: https://ovl.bcnlab.org
-            OVERLEAF_NAV_TITLE: Beacon Overleaf
+            OVERLEAF_NAV_TITLE: Beaconleaf
             # OVERLEAF_HEADER_IMAGE_URL: http://example.com/mylogo.png
             OVERLEAF_ADMIN_EMAIL: help@bcnlab.org
 
-            OVERLEAF_LEFT_FOOTER='[{"text": "<a href=\"https://bcnlab.org/legal/tos\">Terms of Service</a> | <a href=\"https://bcnlab.org/legal/privacy\">Privacy Policy</a>"}]'
+            OVERLEAF_LEFT_FOOTER: '[{"text": "<a href=\"https://bcnlab.org/legal/tos\">Terms of Service</a> | <a href=\"https://bcnlab.org/legal/privacy\">Privacy Policy</a>"}]'
 
-            OVERLEAF_RIGHT_FOOTER='[{"text": "<a href=\"https://bcnlab.org\">bcnlab.org</a>"}]'
+            OVERLEAF_RIGHT_FOOTER: '[{"text": "<a href=\"https://bcnlab.org\">bcnlab.org</a>"}]'
 
 
             # OVERLEAF_EMAIL_FROM_ADDRESS: "hello@example.com"

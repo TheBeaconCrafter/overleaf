@@ -388,6 +388,141 @@ body.dark-theme-marketing.website-redesign {
       background-color: var(--neutral-10);
     }
   }
+  
+  /* Fix admin active users page */
+  .badge {
+    &.bg-success {
+      background-color: var(--green-50) !important;
+      color: var(--white) !important;
+    }
+    
+    &.bg-secondary {
+      background-color: var(--neutral-50) !important;
+      color: var(--white) !important;
+    }
+  }
+  
+  .alert {
+    &.alert-info {
+      background-color: var(--blue-60) !important;
+      border-color: var(--blue-50) !important;
+      color: var(--white) !important;
+    }
+    
+    &.alert-warning {
+      background-color: var(--yellow-60) !important;
+      border-color: var(--yellow-50) !important;
+      color: var(--neutral-10) !important;
+    }
+  }
+  
+  /* Fix modals in dark mode */
+  .modal-content {
+    background-color: var(--neutral-20) !important;
+    border-color: var(--neutral-40) !important;
+    
+    .modal-header {
+      background-color: var(--neutral-30) !important;
+      border-bottom-color: var(--neutral-40) !important;
+      color: var(--white) !important;
+      
+      &.bg-danger {
+        background-color: var(--red-60) !important;
+      }
+      
+      .modal-title {
+        color: var(--white) !important;
+      }
+      
+      .close {
+        color: var(--white) !important;
+        opacity: 0.8;
+        
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+    
+    .modal-body {
+      background-color: var(--neutral-20) !important;
+      color: var(--white) !important;
+      
+      .form-group label {
+        color: var(--white) !important;
+      }
+      
+      .form-control {
+        background-color: var(--neutral-30) !important;
+        border-color: var(--neutral-40) !important;
+        color: var(--white) !important;
+        
+        &::placeholder {
+          color: var(--neutral-60) !important;
+        }
+        
+        &:focus {
+          background-color: var(--neutral-30) !important;
+          border-color: var(--green-50) !important;
+          color: var(--white) !important;
+        }
+      }
+    }
+    
+    .modal-footer {
+      background-color: var(--neutral-20) !important;
+      border-top-color: var(--neutral-40) !important;
+    }
+  }
+  
+  /* Fix button groups and action buttons */
+  .btn-group,
+  .d-flex.gap-1 {
+    .btn {
+      &.btn-warning {
+        background-color: #d97706 !important;
+        border-color: #b45309 !important;
+        color: var(--white) !important;
+        
+        &:hover {
+          background-color: #b45309 !important;
+        }
+      }
+      
+      &.btn-info {
+        background-color: #0284c7 !important;
+        border-color: #0369a1 !important;
+        color: var(--white) !important;
+        
+        &:hover {
+          background-color: #0369a1 !important;
+        }
+      }
+      
+      &.btn-danger {
+        background-color: var(--red-60) !important;
+        border-color: var(--red-70) !important;
+        color: var(--white) !important;
+        
+        &:hover {
+          background-color: var(--red-70) !important;
+        }
+      }
+    }
+  }
+  
+  /* Fix textarea in dark mode */
+  textarea.form-control {
+    background-color: var(--neutral-30) !important;
+    border-color: var(--neutral-40) !important;
+    color: var(--white) !important;
+    
+    &:focus {
+      background-color: var(--neutral-30) !important;
+      border-color: var(--green-50) !important;
+      color: var(--white) !important;
+    }
+  }
 }
 
 /* Theme toggle button styling */

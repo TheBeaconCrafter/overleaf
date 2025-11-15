@@ -41,6 +41,9 @@ export default function AdminMenu({
           <NavDropdownLinkItem href="/admin/user">
             Manage Users
           </NavDropdownLinkItem>
+          <NavDropdownLinkItem href="/admin/users">
+            Active Users
+          </NavDropdownLinkItem>
           <NavDropdownLinkItem href="/admin/about">
             About
           </NavDropdownLinkItem>
