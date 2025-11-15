@@ -11,31 +11,43 @@ block append foot-scripts
 			let currentUserId = null;
 			let currentUserEmail = null;
 			
-			// Initialize Bootstrap 5 modals
-			console.log('[Admin Active Users] Checking Bootstrap availability...');
-			if (typeof bootstrap === 'undefined') {
-				console.error('[Admin Active Users] Bootstrap is not loaded! Modals will not work.');
-				alert('Bootstrap library is not loaded. Please refresh the page or contact support.');
-				return;
+			// this entire file is an absolute mess, but it works so I'm not going to fix it
+			// since bootstrap keeps acting up using vanilla JS
+			function showModal(modalId) {
+				const modal = document.getElementById(modalId);
+				if (modal) {
+					modal.style.display = 'block';
+				}
 			}
 			
-			console.log('[Admin Active Users] Bootstrap detected, initializing modals...');
-			const resetUrlModalEl = document.getElementById('resetUrlModal');
-			const changeEmailModalEl = document.getElementById('changeEmailModal');
-			const deleteUserModalEl = document.getElementById('deleteUserModal');
-			
-			if (!resetUrlModalEl || !changeEmailModalEl || !deleteUserModalEl) {
-				console.error('[Admin Active Users] Modal elements not found in DOM');
-				return;
+			function hideModal(modalId) {
+				const modal = document.getElementById(modalId);
+				if (modal) {
+					modal.style.display = 'none';
+				}
 			}
 			
-			const resetUrlModal = new bootstrap.Modal(resetUrlModalEl);
-			const changeEmailModal = new bootstrap.Modal(changeEmailModalEl);
-			const deleteUserModal = new bootstrap.Modal(deleteUserModalEl);
+			window.onclick = function(event) {
+				if (event.target.id === 'resetUrlModal') {
+					hideModal('resetUrlModal');
+				}
+				if (event.target.id === 'changeEmailModal') {
+					hideModal('changeEmailModal');
+				}
+				if (event.target.id === 'deleteUserModal') {
+					hideModal('deleteUserModal');
+				}
+			}
 			
-			console.log('[Admin Active Users] Modals initialized successfully');
+			document.getElementById('close-reset-modal').addEventListener('click', () => hideModal('resetUrlModal'));
+			document.getElementById('close-reset-modal-btn').addEventListener('click', () => hideModal('resetUrlModal'));
+			document.getElementById('close-email-modal').addEventListener('click', () => hideModal('changeEmailModal'));
+			document.getElementById('close-email-modal-btn').addEventListener('click', () => hideModal('changeEmailModal'));
+			document.getElementById('close-delete-modal').addEventListener('click', () => hideModal('deleteUserModal'));
+			document.getElementById('close-delete-modal-btn').addEventListener('click', () => hideModal('deleteUserModal'));
+			
+			console.log('[Admin Active Users] Vanilla JS modals initialized successfully');
 
-			// Send Password Reset - Generate and Display Link
 			const resetButtons = document.querySelectorAll('.send-reset-btn');
 			console.log('[Admin Active Users] Found ' + resetButtons.length + ' reset password buttons');
 			
@@ -68,7 +80,7 @@ block append foot-scripts
 							// Show modal with reset URL
 							document.getElementById('reset-user-email').textContent = userEmail;
 							document.getElementById('reset-url-display').value = data.resetUrl;
-							resetUrlModal.show();
+							showModal('resetUrlModal');
 						} else {
 							alert('Error: ' + (data.error || 'Unknown error'));
 						}
@@ -118,7 +130,7 @@ block append foot-scripts
 					currentUserEmail = this.dataset.userEmail;
 					document.getElementById('current-email-display').textContent = currentUserEmail;
 					document.getElementById('new-email').value = '';
-					changeEmailModal.show();
+					showModal('changeEmailModal');
 				});
 			});
 
@@ -155,7 +167,7 @@ block append foot-scripts
 						if (data.success) {
 							console.log('[Admin Active Users] Email changed successfully');
 							alert('Email changed successfully!');
-							changeEmailModal.hide();
+							hideModal('changeEmailModal');
 							location.reload();
 						} else {
 							alert('Error: ' + (data.error || 'Unknown error'));
@@ -184,7 +196,7 @@ block append foot-scripts
 					currentUserId = this.dataset.userId;
 					currentUserEmail = this.dataset.userEmail;
 					document.getElementById('delete-user-email').textContent = currentUserEmail;
-					deleteUserModal.show();
+					showModal('deleteUserModal');
 				});
 			});
 
@@ -213,7 +225,7 @@ block append foot-scripts
 						if (data.success) {
 							console.log('[Admin Active Users] User deleted successfully');
 							alert('User deleted successfully!');
-							deleteUserModal.hide();
+							hideModal('deleteUserModal');
 							location.reload();
 						} else {
 							alert('Error: ' + (data.error || 'Unknown error'));
@@ -327,63 +339,57 @@ block content
 									strong Warning: 
 									| Admin actions (password reset, email change, delete) are powerful operations. Use with caution!
 
-	//- Modal for password reset URL display
-	#resetUrlModal.modal.fade(tabindex='-1' role='dialog')
-		.modal-dialog.modal-lg(role='document')
-			.modal-content
-				.modal-header
-					h5.modal-title Password Reset Link
-					button.close(type='button' data-dismiss='modal' aria-label='Close')
-						span(aria-hidden='true') ×
-				.modal-body
-					p Send this link to: 
-						strong#reset-user-email
-					.form-group
-						label Reset URL (expires in 24 hours):
-						textarea#reset-url-display.form-control(rows='4' readonly style='font-family: monospace; font-size: 12px;')
-				.modal-footer
-					button#copy-reset-url.btn.btn-primary(type='button')
-						i.fa.fa-copy(style='margin-right: 5px;')
-						| Copy to Clipboard
-					button.btn.btn-secondary(type='button' data-dismiss='modal') Close
+	//- Modal for password reset URL display (vanilla JS, no Bootstrap)
+	#resetUrlModal(style='display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);')
+		div(style='background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);')
+			div(style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;')
+				h5(style='margin: 0;') Password Reset Link
+				button#close-reset-modal(style='background: none; border: none; font-size: 24px; cursor: pointer; color: #aaa;') ×
+			div
+				p Send this link to: 
+					strong#reset-user-email
+				div(style='margin: 15px 0;')
+					label(style='display: block; margin-bottom: 5px;') Reset URL (expires in 24 hours):
+					textarea#reset-url-display(rows='4' readonly style='width: 100%; font-family: monospace; font-size: 12px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;')
+			div(style='display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;')
+				button#copy-reset-url(style='padding: 8px 16px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer;')
+					i.fa.fa-copy(style='margin-right: 5px;')
+					| Copy to Clipboard
+				button#close-reset-modal-btn(style='padding: 8px 16px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer;') Close
 
-	//- Modal for change email
-	#changeEmailModal.modal.fade(tabindex='-1' role='dialog')
-		.modal-dialog(role='document')
-			.modal-content
-				.modal-header
-					h5.modal-title Change User Email
-					button.close(type='button' data-dismiss='modal' aria-label='Close')
-						span(aria-hidden='true') ×
-				.modal-body
-					p Current email: 
-						strong#current-email-display
-					.form-group
-						label(for='new-email') New Email Address
-						input#new-email.form-control(type='email' placeholder='user@example.com' required)
-				.modal-footer
-					button.btn.btn-secondary(type='button' data-dismiss='modal') Cancel
-					button#confirm-change-email.btn.btn-primary(type='button') Change Email
+	//- Modal for change email (vanilla JS, no Bootstrap)
+	#changeEmailModal(style='display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);')
+		div(style='background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);')
+			div(style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;')
+				h5(style='margin: 0;') Change User Email
+				button#close-email-modal(style='background: none; border: none; font-size: 24px; cursor: pointer; color: #aaa;') ×
+			div
+				p Current email: 
+					strong#current-email-display
+				div(style='margin: 15px 0;')
+					label(for='new-email' style='display: block; margin-bottom: 5px;') New Email Address
+					input#new-email(type='email' placeholder='user@example.com' required style='width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;')
+			div(style='display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;')
+				button#close-email-modal-btn(style='padding: 8px 16px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer;') Cancel
+				button#confirm-change-email(style='padding: 8px 16px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer;') Change Email
 
-	//- Modal for delete confirmation
-	#deleteUserModal.modal.fade(tabindex='-1' role='dialog')
-		.modal-dialog(role='document')
-			.modal-content
-				.modal-header.bg-danger.text-white
-					h5.modal-title Delete User
-					button.close.text-white(type='button' data-dismiss='modal' aria-label='Close')
-						span(aria-hidden='true') ×
-				.modal-body
-					p.text-danger
-						strong WARNING: This action cannot be undone!
-					p You are about to delete user: 
-						strong#delete-user-email
-					p This will:
-					ul
-						li Delete all user projects
-						li Remove the user account
-						li Send a deletion email to the user
-				.modal-footer
-					button.btn.btn-secondary(type='button' data-dismiss='modal') Cancel
-					button#confirm-delete-user.btn.btn-danger(type='button') Delete User
+	//- Modal for delete confirmation (vanilla JS, no Bootstrap)
+	#deleteUserModal(style='display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);')
+		div(style='background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);')
+			div(style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background-color: #dc3545; color: white; padding: 10px; margin: -20px -20px 15px -20px; border-radius: 8px 8px 0 0;')
+				h5(style='margin: 0;') Delete User
+				button#close-delete-modal(style='background: none; border: none; font-size: 24px; cursor: pointer; color: white;') ×
+			div
+				p(style='color: #dc3545;')
+					strong WARNING: This action cannot be undone!
+				p You are about to delete user: 
+					strong#delete-user-email
+				p This will:
+				ul
+					li Delete all user projects
+					li Remove the user account
+					li Send a deletion email to the user
+			div(style='display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;')
+				button#close-delete-modal-btn(style='padding: 8px 16px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer;') Cancel
+				button#confirm-delete-user(style='padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;') Delete User
 
