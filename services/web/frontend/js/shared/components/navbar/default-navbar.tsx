@@ -91,6 +91,18 @@ function DefaultNavbar(
           </div>
           {suppressNavbarRight ? null : (
             <>
+              {/* Theme toggle button */}
+              <button
+                id="theme-toggle-btn"
+                className="btn btn-ghost theme-toggle-btn"
+                type="button"
+                aria-label="Toggle theme"
+                style={{ marginRight: '1rem' }}
+              >
+                <span id="theme-icon" className="material-symbols">
+                  dark_mode
+                </span>
+              </button>
               <Navbar.Toggle
                 aria-controls="navbar-main-collapse"
                 aria-expanded="false"

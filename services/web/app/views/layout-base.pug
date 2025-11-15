@@ -97,6 +97,22 @@ html(
 				meta(name='ol-cannot-' + restriction data-type='boolean' content)
 
 		block head-scripts
+		
+		//- CRITICAL: Apply theme IMMEDIATELY before any rendering to prevent flash
+		script(nonce=scriptNonce).
+			(function() {
+				function getCookie(name) {
+					const value = '; ' + document.cookie;
+					const parts = value.split('; ' + name + '=');
+					if (parts.length === 2) return parts.pop().split(';').shift();
+					return null;
+				}
+				
+				const theme = getCookie('overleaf_theme');
+				if (theme === 'dark') {
+					document.documentElement.classList.add('dark-theme-marketing-preload');
+				}
+			})();
 
 	-
 		// Check cookie for theme preference
@@ -104,11 +120,11 @@ html(
 			if (typeof req !== 'undefined' && req.cookies && req.cookies.overleaf_theme) {
 				return req.cookies.overleaf_theme;
 			}
-			// Default to dark for marketing pages
-			return (entrypoint === 'marketing') ? 'dark' : 'light';
+			// Default to light (user can toggle to dark)
+			return 'light';
 		}
 		const cookieTheme = getThemeFromCookie();
-		const isDarkTheme = (cookieTheme === 'dark' && entrypoint === 'marketing');
+		const isDarkTheme = (cookieTheme === 'dark');
 	body(
 		class={
 			'thin-footer': showThinFooter,
@@ -136,5 +152,82 @@ html(
 
 	block foot-scripts
 		+foot-scripts
+		
+		//- Universal theme toggle script (works on ALL pages)
+		script(type='text/javascript' nonce=scriptNonce).
+			(function() {
+				function getCookie(name) {
+					const value = '; ' + document.cookie;
+					const parts = value.split('; ' + name + '=');
+					if (parts.length === 2) return parts.pop().split(';').shift();
+					return null;
+				}
+				
+				function setCookie(name, value, days) {
+					const date = new Date();
+					date.setTime(date.getTime() + (days || 365) * 24 * 60 * 60 * 1000);
+					const expires = 'expires=' + date.toUTCString();
+					document.cookie = name + '=' + value + ';' + expires + ';path=/;SameSite=Lax';
+				}
+				
+				function getCurrentTheme() {
+					return document.body.classList.contains('dark-theme-marketing') ? 'dark' : 'light';
+				}
+				
+				function applyTheme(theme) {
+					if (theme === 'dark') {
+						document.body.classList.add('dark-theme-marketing');
+						document.documentElement.classList.add('dark-theme-marketing-preload');
+					} else {
+						document.body.classList.remove('dark-theme-marketing');
+						document.documentElement.classList.remove('dark-theme-marketing-preload');
+					}
+				}
+				
+				function updateToggleIcon(theme) {
+					const icon = document.getElementById('theme-icon');
+					if (icon) {
+						icon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
+					}
+				}
+				
+				function initThemeToggle() {
+					// Get the saved theme from cookie
+					const savedTheme = getCookie('overleaf_theme');
+					
+					// Apply theme from cookie (overrides server-rendered class if needed)
+					if (savedTheme) {
+						applyTheme(savedTheme);
+					}
+					
+					// Determine current theme (from body class or cookie)
+					const currentTheme = getCurrentTheme();
+					
+					// Update toggle button icon
+					updateToggleIcon(currentTheme);
+					
+					// Set up click handler for toggle button
+					const toggleBtn = document.getElementById('theme-toggle-btn');
+					if (toggleBtn) {
+						toggleBtn.addEventListener('click', function() {
+							const currentTheme = getCurrentTheme();
+							const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+							applyTheme(newTheme);
+							setCookie('overleaf_theme', newTheme);
+							updateToggleIcon(newTheme);
+						});
+					}
+				}
+				
+				// Make theme toggle globally available
+				window.initThemeToggle = initThemeToggle;
+				
+				// Run on DOMContentLoaded to ensure toggle button exists
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', initThemeToggle);
+				} else {
+					initThemeToggle();
+				}
+			})();
 
 	include _customer_io

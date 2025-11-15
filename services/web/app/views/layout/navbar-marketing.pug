@@ -36,14 +36,13 @@ nav.navbar.navbar-default.navbar-main.navbar-expand-lg(
 		- var canDisplayScriptLogMenu = hasFeature('saas') && hasAdminCapability('view-script-log', false) && canDisplayAdminMenu
 
 		if typeof suppressNavbarRight === 'undefined'
-			// Theme toggle button (for marketing pages only)
-			if entrypoint === 'marketing'
-				button#theme-toggle-btn.btn.btn-ghost.theme-toggle-btn(
-					type='button'
-					aria-label='Toggle theme'
-					style='margin-right: 1rem;'
-				)
-					span#theme-icon.material-symbols
+			// Theme toggle button (available on all pages)
+			button#theme-toggle-btn.btn.btn-ghost.theme-toggle-btn(
+				type='button'
+				aria-label='Toggle theme'
+				style='margin-right: 1rem;'
+			)
+				span#theme-icon.material-symbols dark_mode
 			
 			button#navbar-toggle-btn.navbar-toggler.collapsed(
 				type='button'

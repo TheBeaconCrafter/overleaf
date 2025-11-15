@@ -1,4 +1,4 @@
-/* Dark Theme for Marketing/Login/Home Pages */
+/* Dark Theme for ALL Pages (except editor) */
 .content.content-alt,
 body[data-ol-marketing-dark-theme] {
   &:not(.ide-page) {
@@ -6,9 +6,19 @@ body[data-ol-marketing-dark-theme] {
   }
 }
 
-/* Apply dark theme to marketing pages via body class */
+/* Apply dark theme via body class - works on ALL pages */
 body.dark-theme-marketing {
   background-color: var(--neutral-10);
+  
+  /* Exclude the editor from dark theme */
+  &.ide-page {
+    background-color: initial;
+    
+    .navbar-default {
+      background-color: initial;
+      border-bottom: none;
+    }
+  }
   
   .content,
   .content-alt {
@@ -47,6 +57,146 @@ body.dark-theme-marketing {
     
     &:hover {
       color: var(--green-30);
+    }
+  }
+}
+
+/* Fix for React-based pages (project list, settings, etc.) */
+html.dark-theme-marketing-preload,
+html.dark-theme-marketing-preload body,
+body.dark-theme-marketing,
+body.dark-theme-marketing.application-page,
+body.dark-theme-marketing.website-redesign {
+  /* Override themed color variables for dark mode - IMPORTANT: these need high specificity */
+  --bg-primary-themed: #1e1e1e !important;
+  --bg-secondary-themed: #2a2a2a !important;
+  --bg-light-primary: #1e1e1e !important;
+  --bg-light-secondary: #2a2a2a !important;
+  --bg-light-tertiary: #3a3a3a !important;
+  --content-primary-themed: #fff !important;
+  --content-secondary-themed: #cccccc !important;
+  --content-secondary: #cccccc !important;
+  --border-divider-themed: #4a4a4a !important;
+  --border-divider: #4a4a4a !important;
+  --ds-nav-bg-color: #1e1e1e !important;
+  --ds-nav-hover-bg: #2a2a2a !important;
+  --ds-nav-color: #cccccc !important;
+  
+  /* Fix table components globally */
+  .table-container {
+    background-color: var(--neutral-20);
+  }
+  
+  .table-container-bordered {
+    border-color: var(--neutral-40);
+    background-color: var(--neutral-20);
+  }
+  
+  /* Fix project list page specifically */
+  .project-ds-nav-page {
+    color: var(--neutral-80);
+    
+    .project-list-wrapper {
+      background-color: var(--neutral-10);
+    }
+    
+    .project-ds-nav-content {
+      background-color: var(--neutral-20);
+      border-color: var(--neutral-40);
+    }
+    
+    .project-ds-nav-content-and-messages > * {
+      border-left-color: var(--neutral-40);
+    }
+    
+    /* Fix "All projects" and other title text in main area */
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--white) !important;
+    }
+    
+    /* Fix "All projects" text in LEFT SIDEBAR */
+    .project-list-filters {
+      .dropdown-header {
+        color: var(--white) !important;
+        font-weight: bold;
+      }
+      
+      > li > button {
+        color: var(--neutral-80);
+      }
+      
+      > li.active button {
+        color: var(--white) !important;
+        background-color: var(--green-50) !important;
+      }
+    }
+    
+    /* Fix borders - make them subtle, not thick white */
+    .project-ds-nav-project-list {
+      border: none !important;
+    }
+    
+    /* Fix table styling */
+    .dash-cell-name a {
+      color: var(--white) !important;
+    }
+    
+    /* Fix sidebar colors */
+    .project-list-sidebar-wrapper-react {
+      background-color: var(--neutral-10);
+    }
+    
+    /* Fix button hover states */
+    .btn-link {
+      &:hover,
+      &:focus {
+        background-color: var(--neutral-30) !important;
+      }
+    }
+  }
+  
+  /* Fix dropdown menus (admin, user, new project, etc.) */
+  .dropdown-menu {
+    background-color: var(--neutral-20) !important;
+    border-color: var(--neutral-40) !important;
+    
+    .dropdown-item {
+      color: var(--white) !important;
+      
+      &:hover,
+      &:focus {
+        background-color: var(--neutral-30) !important;
+        color: var(--white) !important;
+      }
+    }
+    
+    .dropdown-header {
+      color: var(--neutral-70) !important;
+    }
+    
+    .dropdown-divider {
+      border-top-color: var(--neutral-40) !important;
+    }
+  }
+  
+  /* Fix Bootstrap dropdown in navbar */
+  .navbar-nav .dropdown-menu {
+    background-color: var(--neutral-20) !important;
+    
+    a {
+      color: var(--white) !important;
+      
+      &:hover {
+        background-color: var(--neutral-30) !important;
+      }
+    }
+  }
+  
+  /* Fix settings page and other application pages */
+  &.application-page {
+    .content,
+    .content-alt {
+      background-color: var(--neutral-10);
     }
   }
 }
