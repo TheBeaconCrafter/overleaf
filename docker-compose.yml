@@ -24,7 +24,7 @@ services:
             # - /var/run/docker.sock:/var/run/docker.sock
         environment:
 
-            OVERLEAF_APP_NAME: Overleaf Community Edition
+            OVERLEAF_APP_NAME: Beacon Overleaf
 
             OVERLEAF_MONGO_URL: mongodb://mongo/sharelatex
 
@@ -44,13 +44,15 @@ services:
             ## Set for SSL via nginx-proxy
             #VIRTUAL_HOST: 103.112.212.22
 
-            # OVERLEAF_SITE_URL: http://overleaf.example.com
-            # OVERLEAF_NAV_TITLE: Overleaf Community Edition
+            OVERLEAF_SITE_URL: https://ovl.bcnlab.org
+            OVERLEAF_NAV_TITLE: Beacon Overleaf
             # OVERLEAF_HEADER_IMAGE_URL: http://example.com/mylogo.png
-            # OVERLEAF_ADMIN_EMAIL: support@it.com
+            OVERLEAF_ADMIN_EMAIL: help@bcnlab.org
 
-            # OVERLEAF_LEFT_FOOTER: '[{"text": "Another page I want to link to can be found <a href=\"here\">here</a>"} ]'
-            # OVERLEAF_RIGHT_FOOTER: '[{"text": "Hello I am on the Right"} ]'
+            OVERLEAF_LEFT_FOOTER='[{"text": "<a href=\"https://bcnlab.org/legal/tos\">Terms of Service</a> | <a href=\"https://bcnlab.org/legal/privacy\">Privacy Policy</a>"}]'
+
+            OVERLEAF_RIGHT_FOOTER='[{"text": "<a href=\"https://bcnlab.org\">bcnlab.org</a>"}]'
+
 
             # OVERLEAF_EMAIL_FROM_ADDRESS: "hello@example.com"
 

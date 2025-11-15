@@ -155,23 +155,34 @@ body.dark-theme-marketing.website-redesign {
     }
   }
   
-  /* Fix dropdown menus (admin, user, new project, etc.) */
+  /* Dropdown menus (admin, user, new project, etc.) */
   .dropdown-menu {
     background-color: var(--neutral-20) !important;
     border-color: var(--neutral-40) !important;
     
-    .dropdown-item {
+    .dropdown-item,
+    button,
+    a,
+    li > a,
+    li > button {
+      background-color: var(--neutral-20) !important;
       color: var(--white) !important;
       
       &:hover,
-      &:focus {
+      &:focus,
+      &:active {
         background-color: var(--neutral-30) !important;
         color: var(--white) !important;
       }
     }
     
+    li {
+      background-color: var(--neutral-20) !important;
+    }
+    
     .dropdown-header {
       color: var(--neutral-70) !important;
+      background-color: var(--neutral-20) !important;
     }
     
     .dropdown-divider {
@@ -183,13 +194,191 @@ body.dark-theme-marketing.website-redesign {
   .navbar-nav .dropdown-menu {
     background-color: var(--neutral-20) !important;
     
-    a {
+    li,
+    li > a,
+    li > button,
+    a,
+    button {
+      background-color: var(--neutral-20) !important;
       color: var(--white) !important;
       
-      &:hover {
+      &:hover,
+      &:focus {
         background-color: var(--neutral-30) !important;
+        color: var(--white) !important;
       }
     }
+  }
+  
+  /* Fix New Project button dropdown */
+  .new-project-dropdown,
+  .new-project-button-dropdown {
+    .dropdown-menu {
+      background-color: var(--neutral-20) !important;
+      border-color: var(--neutral-40) !important;
+      
+      li,
+      button,
+      a {
+        background-color: var(--neutral-20) !important;
+        color: var(--white) !important;
+        
+        &:hover,
+        &:focus {
+          background-color: var(--neutral-30) !important;
+          color: var(--white) !important;
+        }
+      }
+    }
+  }
+  
+  /* Fix search bar in project list */
+  .project-ds-nav-page {
+    /* Search input styling */
+    input[type="text"],
+    input[type="search"],
+    .form-control {
+      background-color: var(--neutral-20) !important;
+      border-color: var(--neutral-40) !important;
+      color: var(--white) !important;
+      
+      &::placeholder {
+        color: var(--neutral-60) !important;
+      }
+      
+      &:focus {
+        background-color: var(--neutral-20) !important;
+        border-color: var(--green-50) !important;
+        color: var(--white) !important;
+      }
+    }
+  }
+  
+  /* Override the light red accent color (#ffe5e5 / green-10 / bg-accent-03) for dark mode */
+  --bg-accent-03: #4a1a1a !important;
+  --green-10: #4a1a1a !important;
+  
+  /* Fix selected project row */
+  .project-ds-nav-page {
+    .dash-cell {
+      background-color: transparent;
+    }
+    
+    /* Override Bootstrap's table active background to use darker red in dark mode */
+    --bs-table-bg: transparent !important;
+    --bs-table-active-bg: #4a1a1a !important; /* Dark red instead of light red (#ffe5e5) for legibility */
+    --bs-table-active-color: var(--white) !important;
+    --bs-table-hover-bg: #5a2020 !important; /* Slightly lighter dark red on hover */
+    --bs-table-hover-color: var(--white) !important;
+    
+    /* Also override at the table level */
+    .table {
+      --bs-table-active-bg: #4a1a1a !important;
+      --bs-table-hover-bg: #5a2020 !important;
+    }
+    
+    /* Fix table rows to not show white background */
+    tbody tr {
+      background-color: transparent !important;
+      
+      td,
+      th {
+        background-color: transparent !important;
+      }
+    }
+    
+    /* Fix selected row using Bootstrap's table-active class */
+    tr.table-active,
+    tr.table-active:not(:hover) {
+      /* Let Bootstrap's variable work, but we've overridden it to dark red above */
+      background-image: none !important;
+      
+      td,
+      th {
+        background-image: none !important;
+        color: var(--white) !important;
+      }
+      
+      &:hover {
+        background-image: none !important;
+        
+        td,
+        th {
+          background-image: none !important;
+          color: var(--white) !important;
+        }
+      }
+      
+      /* Fix More and Tag buttons when project selected - no outline */
+      .btn,
+      .btn-link {
+        color: var(--white) !important;
+        background-color: transparent !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        
+        &:hover {
+          background-color: var(--neutral-50) !important;
+        }
+        
+        &:focus,
+        &:active {
+          outline: none !important;
+          box-shadow: none !important;
+        }
+      }
+    }
+    
+    /* Also handle older class names if they exist */
+    tr.project-list-table-row-selected {
+      background-color: var(--neutral-30) !important;
+      --bs-table-bg: var(--neutral-30) !important;
+      
+      td,
+      th {
+        background-color: var(--neutral-30) !important;
+        color: var(--white) !important;
+      }
+      
+      &:hover {
+        background-color: var(--neutral-40) !important;
+        
+        td,
+        th {
+          background-color: var(--neutral-40) !important;
+        }
+      }
+      
+      .btn,
+      .btn-link {
+        color: var(--white) !important;
+        background-color: transparent !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        
+        &:hover {
+          background-color: var(--neutral-50) !important;
+        }
+        
+        &:focus,
+        &:active {
+          outline: none !important;
+          box-shadow: none !important;
+        }
+      }
+    }
+  }
+  
+  /* Fix project loading screen */
+  .loading-screen,
+  .loading-screen-brand-container {
+    background-color: var(--neutral-10) !important;
+  }
+  
+  .loading-screen-label {
+    color: var(--white) !important;
   }
   
   /* Fix settings page and other application pages */

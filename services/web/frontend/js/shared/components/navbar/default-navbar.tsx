@@ -98,6 +98,29 @@ function DefaultNavbar(
                 type="button"
                 aria-label="Toggle theme"
                 style={{ marginRight: '1rem' }}
+                onClick={(e: React.MouseEvent) => {
+                  // finally OHHH my god
+                  e.preventDefault()
+                  const isDark = document.body.classList.contains('dark-theme-marketing')
+                  const newTheme = isDark ? 'light' : 'dark'
+                  
+                  if (newTheme === 'dark') {
+                    document.body.classList.add('dark-theme-marketing')
+                    document.documentElement.classList.add('dark-theme-marketing-preload')
+                  } else {
+                    document.body.classList.remove('dark-theme-marketing')
+                    document.documentElement.classList.remove('dark-theme-marketing-preload')
+                  }
+                  
+                  const date = new Date()
+                  date.setTime(date.getTime() + 365 * 24 * 60 * 60 * 1000)
+                  document.cookie = `overleaf_theme=${newTheme};expires=${date.toUTCString()};path=/;SameSite=Lax`
+                  
+                  const icon = document.getElementById('theme-icon')
+                  if (icon) {
+                    icon.textContent = newTheme === 'dark' ? 'light_mode' : 'dark_mode'
+                  }
+                }}
               >
                 <span id="theme-icon" className="material-symbols">
                   dark_mode
