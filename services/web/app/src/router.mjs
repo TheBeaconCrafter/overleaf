@@ -1253,6 +1253,12 @@ async function initialize(webRouter, privateApiRouter, publicApiRouter) {
       RateLimiterMiddleware.rateLimit(rateLimiters.grantTokenAccessReadOnly),
       TokenAccessController.grantTokenAccessReadOnly
     )
+
+    // qol: redirect CE broken links to overleaf
+    webRouter.get(['/learn*', '/templates*', '/blog*', '/latex*', '/for/*', '/contact*'], (req, res) => {
+      res.redirect(301, 'https://www.overleaf.com')
+    })
+
   }
 
   webRouter.get('/unsupported-browser', renderUnsupportedBrowserPage)
