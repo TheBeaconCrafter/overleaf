@@ -254,13 +254,14 @@ block content
 				.col-md-12
 					.card
 						.card-body
-							h1 Active Users Monitoring
+							h1 Editing Users Monitoring
 							
 							.alert.alert-info(style='margin-top: 20px;')
-								strong Total Online Users: #{onlineCount}
+								strong Total Users Currently Editing: #{onlineCount}
+								p.mb-0(style='margin-top: 8px;') This shows users who are currently editing a project in the editor.
 							
 							.d-flex.justify-content-between.align-items-center(style='margin: 20px 0;')
-								p.text-muted Showing all registered users
+								p.text-muted Showing all registered users (users currently editing are marked with a green badge)
 								a.btn.btn-primary(href='/admin/users' onclick='window.location.reload(); return false;')
 									i.fa.fa-refresh(style='margin-right: 5px;')
 									| Refresh
@@ -280,10 +281,13 @@ block content
 											each user in users
 												tr(data-user-id=user._id)
 													td
-														if user.isOnline
-															span.badge.bg-success(title='Online') ●
+														- const isEditing = user.isOnline === true || user.isOnline === 'true' || String(user.isOnline) === 'true'
+														- const statusText = isEditing ? 'Currently Editing' : 'Not Editing'
+														- const statusClass = isEditing ? 'bg-success' : 'bg-secondary'
+														if isEditing
+															span.badge(class=statusClass title=statusText data-status='editing') ●
 														else
-															span.badge.bg-secondary(title='Offline') ●
+															span.badge(class=statusClass title=statusText data-status='not-editing') ●
 													td= user.email
 													td= (user.first_name || '') + ' ' + (user.last_name || '')
 													td

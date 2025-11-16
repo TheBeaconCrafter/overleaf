@@ -26,3 +26,24 @@
     max-width: unset;
   }
 }
+
+/* Dark mode tooltip styles */
+.editor-dark-mode {
+  .tooltip {
+    .tooltip-inner {
+      background-color: var(--bg-dark-secondary) !important;
+      color: var(--content-primary-dark) !important;
+      border: 1px solid var(--border-primary-dark) !important;
+    }
+  }
+}
+
+body:not(.editor-dark-mode) {
+  .tooltip {
+    .tooltip-inner {
+      background-color: var(--bg-light-primary) !important;
+      color: var(--content-primary) !important;
+      border: 1px solid var(--border-primary) !important;
+    }
+  }
+}

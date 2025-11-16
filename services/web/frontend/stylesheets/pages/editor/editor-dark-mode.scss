@@ -10,12 +10,16 @@
   --history-loading-bg: var(--bg-dark-secondary);
 
   /* PDF Viewer dark background */
+  .pdf,
   .pdf-viewer,
-  .pdf {
+  .pdfjs-viewer,
+  .pdfjs-viewer-outer {
     background-color: var(--neutral-20) !important;
   }
 
-  .pdfViewer .page {
+  .pdfViewer,
+  .pdfViewer .page,
+  .pdfjs-viewer .pdfViewer .page {
     background: var(--neutral-10) !important;
   }
 
@@ -28,6 +32,11 @@
   .cm-gutters {
     background-color: var(--bg-dark-secondary) !important;
     color: var(--content-secondary-dark) !important;
+  }
+
+  .cm-activeLineGutter {
+    background-color: var(--bg-dark-tertiary) !important;
+    color: var(--content-primary-dark) !important;
   }
 
   .cm-content {
@@ -81,14 +90,44 @@
 
 /* Light mode override when toggled off */
 body:not(.editor-dark-mode) {
-  /* Force light backgrounds */
+  /* Override PDF background CSS variable */
+  --pdf-bg: var(--neutral-90) !important;
+
+  /* Force light backgrounds for PDF viewer - use more specific selectors */
+  .pdf,
   .pdf-viewer,
-  .pdf {
+  .pdfjs-viewer,
+  .pdfjs-viewer-outer {
     background-color: var(--neutral-90) !important;
   }
 
-  .pdfViewer .page {
+  .pdfViewer,
+  .pdfViewer .page,
+  .pdfjs-viewer .pdfViewer .page {
     background: #ffffff !important;
+  }
+
+  /* Ensure PDF viewer is light even if site-wide dark mode is on */
+  &.dark-theme-marketing {
+    --pdf-bg: var(--neutral-90) !important;
+
+    .pdf,
+    .pdf-viewer,
+    .pdfjs-viewer,
+    .pdfjs-viewer-outer {
+      background-color: var(--neutral-90) !important;
+    }
+
+    .pdfViewer,
+    .pdfViewer .page,
+    .pdfjs-viewer .pdfViewer .page {
+      background: #ffffff !important;
+    }
+  }
+
+  .cm-activeLineGutter {
+    background-color: var(--bg-light-tertiary) !important;
+    color: var(--content-primary) !important;
   }
 
   .cm-editor {

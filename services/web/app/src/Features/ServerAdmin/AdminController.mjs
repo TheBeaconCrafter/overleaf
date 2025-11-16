@@ -117,13 +117,28 @@ const AdminController = {
   async activeUsers(req, res, next) {
     try {
       const { users, onlineCount} = await ActiveUsersManager.getAllUsersWithStatus()
+      
+      logger.info(
+        { 
+          totalUsers: users?.length || 0, 
+          editingCount: onlineCount,
+          sampleUser: users?.[0] ? {
+            email: users[0].email,
+            isEditing: users[0].isOnline,
+            hasProject: !!users[0].currentProject,
+            projectName: users[0].currentProject?.name
+          } : null
+        },
+        'Rendering editing users page'
+      )
+      
       res.render('admin/active-users', {
-        title: 'Active Users',
-        users,
-        onlineCount,
+        title: 'Editing Users',
+        users: users || [],
+        onlineCount: onlineCount || 0,
       })
     } catch (error) {
-      logger.error({ error }, 'Error loading active users page')
+      logger.error({ error }, 'Error loading editing users page')
       next(error)
     }
   },

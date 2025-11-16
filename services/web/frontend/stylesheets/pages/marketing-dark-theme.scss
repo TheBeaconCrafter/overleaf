@@ -414,6 +414,47 @@ body.dark-theme-marketing.website-redesign {
       border-color: var(--yellow-50) !important;
       color: var(--neutral-10) !important;
     }
+    
+    &.alert-danger {
+      background-color: var(--red-60) !important;
+      border-color: var(--red-50) !important;
+      color: var(--white) !important;
+      
+      a {
+        color: var(--white) !important;
+        text-decoration: underline;
+        
+        &:hover {
+          color: var(--neutral-80) !important;
+        }
+      }
+    }
+  }
+  
+  /* Fix notification error messages (login page) */
+  .notification {
+    &.notification-type-error {
+      background-color: var(--red-60) !important;
+      border-color: var(--red-50) !important;
+      color: var(--white) !important;
+      
+      .notification-content {
+        color: var(--white) !important;
+      }
+      
+      .notification-icon {
+        color: var(--white) !important;
+      }
+      
+      a:not(.btn) {
+        color: var(--white) !important;
+        text-decoration: underline;
+        
+        &:hover {
+          color: var(--neutral-80) !important;
+        }
+      }
+    }
   }
   
   /* Fix modals in dark mode */
@@ -521,6 +562,92 @@ body.dark-theme-marketing.website-redesign {
       background-color: var(--neutral-30) !important;
       border-color: var(--green-50) !important;
       color: var(--white) !important;
+    }
+  }
+  
+  /* Fix admin modals (vanilla JS modals with inline styles) */
+  #resetUrlModal,
+  #changeEmailModal,
+  #deleteUserModal {
+    > div {
+      background-color: var(--neutral-20) !important;
+      border-color: var(--neutral-40) !important;
+      color: var(--white) !important;
+      
+      h5 {
+        color: var(--white) !important;
+      }
+      
+      p {
+        color: var(--white) !important;
+      }
+      
+      strong {
+        color: var(--white) !important;
+      }
+      
+      label {
+        color: var(--white) !important;
+      }
+      
+      ul {
+        color: var(--white) !important;
+      }
+      
+      input[type='email'],
+      textarea {
+        background-color: var(--neutral-30) !important;
+        border-color: var(--neutral-40) !important;
+        color: var(--white) !important;
+        
+        &::placeholder {
+          color: var(--neutral-60) !important;
+        }
+        
+        &:focus {
+          background-color: var(--neutral-30) !important;
+          border-color: var(--green-50) !important;
+          color: var(--white) !important;
+          outline: none;
+        }
+      }
+      
+      button {
+        &[id*='close'] {
+          color: var(--white) !important;
+          
+          &:hover {
+            color: var(--neutral-80) !important;
+          }
+        }
+      }
+    }
+  }
+  
+  /* Delete modal header (has red background) */
+  #deleteUserModal > div > div:first-child {
+    background-color: var(--red-60) !important;
+    color: var(--white) !important;
+    
+    h5 {
+      color: var(--white) !important;
+    }
+    
+    button {
+      color: var(--white) !important;
+      
+      &:hover {
+        color: var(--neutral-80) !important;
+      }
+    }
+  }
+  
+  /* Warning text in delete modal */
+  #deleteUserModal > div > div:nth-child(2) > p:first-child {
+    color: var(--red-40) !important;
+    
+    strong {
+      color: var(--red-40) !important;
     }
   }
 }
