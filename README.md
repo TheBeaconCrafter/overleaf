@@ -1,70 +1,198 @@
 <h1 align="center">
   <br>
-  <a href="https://www.overleaf.com"><img src="doc/logo.png" alt="Overleaf" width="300"></a>
+  <a href="https://www.overleaf.com"><img src="doc/branding/beaconleaf_text.png" alt="Overleaf" width="300"></a>
 </h1>
 
-<h4 align="center">An open-source online real-time collaborative LaTeX editor.</h4>
+<h4 align="center">A fork of Overleaf, an open-source online real-time collaborative LaTeX editor.</h4>
 
 <p align="center">
+  <a href="https://github.com/overleaf/overleaf/">Overleaf</a> •
   <a href="https://github.com/overleaf/overleaf/wiki">Wiki</a> •
-  <a href="https://www.overleaf.com/for/enterprises">Server Pro</a> •
   <a href="#contributing">Contributing</a> •
-  <a href="https://mailchi.mp/overleaf.com/community-edition-and-server-pro">Mailing List</a> •
   <a href="#authors">Authors</a> •
   <a href="#license">License</a>
 </p>
 
 <img src="doc/screenshot.png" alt="A screenshot of a project being edited in Overleaf Community Edition">
 <p align="center">
-  Figure 1: A screenshot of a project being edited in Overleaf Community Edition.
+  Figure 1: A screenshot of a project being edited in Beaconleaf.
 </p>
 
 ## Community Edition
 
-[Overleaf](https://www.overleaf.com) is an open-source online real-time collaborative LaTeX editor. We run a hosted version at [www.overleaf.com](https://www.overleaf.com), but you can also run your own local version, and contribute to the development of Overleaf.
+[Beaconleaf](https://github.com/TheBeaconCrafter/overleaf) is a fork of [Overleaf](https://www.overleaf.com), an open-source online real-time collaborative LaTeX editor. Overleaf runs a public hosted version at [www.overleaf.com](https://www.overleaf.com), but you can also run your own local version, and contribute to the development of Overleaf.
 
 > [!CAUTION]
 > Overleaf Community Edition is intended for use in environments where **all** users are trusted. Community Edition is **not** appropriate for scenarios where isolation of users is required due to Sandbox Compiles not being available. When not using Sandboxed Compiles, users have full read and write access to the `sharelatex` container resources (filesystem, network, environment variables) when running LaTeX compiles.
 
 For more information on Sandbox Compiles check out our [documentation](https://docs.overleaf.com/on-premises/configuration/overleaf-toolkit/server-pro-only-configuration/sandboxed-compiles).
 
-## Enterprise
+## Beaconleaf vs Overleaf
 
-If you want help installing and maintaining Overleaf in your lab or workplace, we offer an officially supported version called [Overleaf Server Pro](https://www.overleaf.com/for/enterprises). It also includes more features for security (SSO with LDAP or SAML), administration and collaboration (e.g. tracked changes). [Find out more!](https://www.overleaf.com/for/enterprises)
+Beaconleaf is a fork of Overleaf Community Edition with the following enhancements:
 
-## Keeping up to date
+- **Global Dark Mode**: Site-wide dark theme support for improved user experience
+- **Administrator Tools**: Enhanced administrative features for better server management
+- **Symbol Palette**: Professional symbol palette similar to Overleaf Pro, providing quick access to mathematical and special characters
 
-Sign up to the [mailing list](https://mailchi.mp/overleaf.com/community-edition-and-server-pro) to get updates on Overleaf releases and development.
+## Planned Features
 
-## Installation
+The following features are planned for future releases:
 
-We have detailed installation instructions in the [Overleaf Toolkit](https://github.com/overleaf/toolkit/).
+- [ ] Enhanced admin tools (see online users)
+- [ ] Sandboxed compiles
+- [ ] Autocomplete of reference keys
+- [ ] Template Gallery
+- [ ] Git integration
+- [ ] AI Features
+- [ ] Google Drive Sync
 
-## Upgrading
+## Known Bugs
 
-If you are upgrading from a previous version of Overleaf, please see the [Release Notes section on the Wiki](https://github.com/overleaf/overleaf/wiki#release-notes) for all of the versions between your current version and the version you are upgrading to.
+The following issues are currently known:
 
-## Overleaf Docker Image
+- In dark mode, changing the spacing between text editor and PDF will flashbang you
+- In dark mode, opening a project also flashbangs you
+- Project URL lookup says "Sorry, we can't find the page you are looking for."
 
-This repo contains two dockerfiles, [`Dockerfile-base`](server-ce/Dockerfile-base), which builds the
-`sharelatex/sharelatex-base` image, and [`Dockerfile`](server-ce/Dockerfile) which builds the
-`sharelatex/sharelatex` (or "community") image.
+## Building
 
-The Base image generally contains the basic dependencies like `wget`, plus `texlive`.
-We split this out because it's a pretty heavy set of
-dependencies, and it's nice to not have to rebuild all of that every time.
+### Prerequisites
 
-The `sharelatex/sharelatex` image extends the base image and adds the actual Overleaf code
-and services.
+Before building, ensure that `server-ce/Dockerfile` has the correct base image tag:
 
-Use `make build-base` and `make build-community` from `server-ce/` to build these images.
+```dockerfile
+ARG OVERLEAF_BASE_TAG=sharelatex/sharelatex-base:main
+```
 
-We use the [Phusion base-image](https://github.com/phusion/baseimage-docker)
-(which is extended by our `base` image) to provide us with a VM-like container
-in which to run the Overleaf services. Baseimage uses the `runit` service
-manager to manage services, and we add our init-scripts from the `server-ce/runit`
-folder.
+**Important**: Do not use `sharelatex/sharelatex-base:latest` as the base tag.
 
+### Build Steps
+
+1. Build the base and community images:
+
+```bash
+cd server-ce
+sudo make build-base
+sudo make build-community
+```
+
+2. Build and start the Docker Compose stack:
+
+```bash
+sudo docker compose build
+sudo docker compose up
+```
+
+Alternatively, you can combine all build steps into a single command:
+
+```bash
+sudo make build-base && sudo make build-community && sudo docker compose build && sudo docker compose up
+```
+
+## Deployment
+
+### Backup Before Deployment
+
+**Always create a full backup before deploying updates** to prevent data loss.
+
+1. Stop the running stack to ensure MongoDB isn't mid-write:
+
+```bash
+cd /path/to/beaconleaf/data
+docker compose -f /path/to/docker-compose.yml down
+```
+
+2. Create a complete backup archive (includes permissions, owners, symlinks, and all data):
+
+```bash
+tar -cvpzf /path/to/output/beaconleaf-backup-$(date +%F).tar.gz \
+    sharelatex_data \
+    mongo_data \
+    redis_data
+```
+
+3. Optionally bring the stack back up:
+
+```bash
+docker compose -f /path/to/docker-compose.yml up -d
+```
+
+### Updating Docker Compose Configuration
+
+Before pulling and building updates, ensure your `docker-compose.yml` uses a build context instead of a pre-built image.
+
+Replace this:
+
+```yaml
+image: beaconleaf/sharelatex:texlive-full
+```
+
+With this:
+
+```yaml
+build:
+    context: .
+    dockerfile: server-ce/Dockerfile
+```
+
+### Deploying Updates
+
+1. Pull the latest changes and build the updated images:
+
+```bash
+cd /path/to/compose
+git pull
+cd server-ce
+sudo make build-base && sudo make build-community && sudo docker compose build
+```
+
+2. Start the updated stack:
+
+```bash
+sudo docker compose up -d
+```
+
+### Installing Full TeX Live Scheme (Optional)
+
+To install the full TeX Live scheme for comprehensive LaTeX package support:
+
+1. Execute into the running container:
+
+```bash
+docker exec -it sharelatex bash
+```
+
+2. Install the full TeX Live scheme:
+
+```bash
+tlmgr install scheme-full
+tlmgr path add
+```
+
+3. Commit the container with the full TeX Live installation to make it persistent:
+
+```bash
+docker commit sharelatex beaconleaf/sharelatex:texlive-full
+```
+
+4. Update `docker-compose.yml` to use the new image:
+
+Replace this:
+
+```yaml
+build:
+    context: .
+    dockerfile: server-ce/Dockerfile
+```
+
+With this:
+
+```yaml
+image: beaconleaf/sharelatex:texlive-full
+```
+
+For more information on upgrading TeX Live, see the [official Overleaf documentation](https://docs.overleaf.com/on-premises/installation/upgrading-tex-live).
 
 ## Contributing
 
@@ -73,6 +201,8 @@ Please see the [CONTRIBUTING](CONTRIBUTING.md) file for information on contribut
 ## Authors
 
 [The Overleaf Team](https://www.overleaf.com/about)
+
+[Vincent Wackler](https://github.com/TheBeaconCrafter/overleaf)
 
 ## License
 
