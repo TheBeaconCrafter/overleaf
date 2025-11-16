@@ -54,6 +54,7 @@ The following issues are currently known:
 - In dark mode, changing the spacing between text editor and PDF will flashbang you
 - In dark mode, opening a project also flashbangs you
 - Project URL lookup says "Sorry, we can't find the page you are looking for."
+- The "Lost connection" popup is not legible in dark mode
 
 ## Building
 
