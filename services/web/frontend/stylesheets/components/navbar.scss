@@ -48,8 +48,12 @@
       width: var(--navbar-brand-width);
       height: $header-height;
       padding: 0;
-      background: var(--navbar-brand-image-url) no-repeat left center;
+      background: var(--navbar-brand-image-url) no-repeat center center;
       background-size: contain;
+
+      &.navbar-logo-horizontal {
+        padding: var(--spacing-02) 0;
+      }
     }
 
     .navbar-title {

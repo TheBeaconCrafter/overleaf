@@ -53,7 +53,7 @@ $editor-toggler-bg-dark-color: color.adjust(
   --editor-resizer-bg-color: var(--bg-dark-tertiary);
 
   .ide-panel-group-resizing {
-    background-color: var(--white);
+    background-color: var(--ide-redesign-resizing-background, var(--ide-redesign-background));
 
     // Hide panel contents while resizing
     .ide-redesign-editor-content,
@@ -140,12 +140,30 @@ $editor-toggler-bg-dark-color: color.adjust(
 }
 
 .ide-panel-group-resizing {
-  background-color: var(--white);
+  background-color: var(--ide-redesign-resizing-background);
 
   // Hide panel contents while resizing
   .ide-react-editor-content,
   .pdf {
     display: none !important;
+  }
+  
+  // Ensure editor and PDF containers use proper background during resize
+  .ide-redesign-editor-container,
+  .ide-react-editor-panel,
+  .pdf-viewer,
+  .pdfjs-viewer,
+  .pdfjs-viewer-outer,
+  .ide-redesign-pdf-container {
+    background-color: var(--ide-redesign-resizing-background) !important;
+  }
+  
+  // Also target panels directly
+  section[id="ide-redesign-editor-panel"],
+  section[id="ide-redesign-pdf-panel"],
+  section[id="panel-ide"],
+  section[id="panel-pdf"] {
+    background-color: var(--ide-redesign-resizing-background) !important;
   }
 }
 

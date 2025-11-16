@@ -107,10 +107,68 @@ const AdminController = {
       logger.error({ error }, 'Error getting version information')
     }
 
+    let buildDate = null
+    try {
+      const { execSync } = require('child_process')
+      const fs = require('fs')
+      const path = require('path')
+
+      const possibleRoots = [
+        path.join(__dirname, '../../../../../../'), // From ServerAdmin to root
+        path.join(__dirname, '../../../../../'), // Alternative path
+        process.cwd(), // Current working directory
+      ]
+
+      let projectRoot = null
+      for (const root of possibleRoots) {
+        const gitDir = path.join(root, '.git')
+        if (fs.existsSync(gitDir)) {
+          projectRoot = root
+          break
+        }
+      }
+
+      if (projectRoot) {
+        try {
+          const commitDate = execSync('git log -1 --format=%ci HEAD', {
+            cwd: projectRoot,
+            encoding: 'utf8',
+            stdio: ['ignore', 'pipe', 'ignore'],
+          }).trim()
+          if (commitDate) {
+            buildDate = new Date(commitDate).toLocaleString()
+          }
+        } catch (gitError) {
+        }
+      }
+
+      if (!buildDate && process.env.BUILD_DATE) {
+        buildDate = new Date(process.env.BUILD_DATE).toLocaleString()
+      }
+
+      if (!buildDate) {
+        const possiblePackageJsonPaths = [
+          path.join(__dirname, '../../../../../../package.json'),
+          path.join(__dirname, '../../../../../package.json'),
+          path.join(process.cwd(), 'package.json'),
+        ]
+        for (const packageJsonPath of possiblePackageJsonPaths) {
+          if (fs.existsSync(packageJsonPath)) {
+            const stats = fs.statSync(packageJsonPath)
+            buildDate = stats.mtime.toLocaleString()
+            break
+          }
+        }
+      }
+    } catch (error) {
+      logger.error({ error }, 'Error getting build date')
+    }
+
     res.render('admin/about', {
       title: 'About',
       version,
       nodeVersion: process.version,
+      buildDate,
     })
   },
 

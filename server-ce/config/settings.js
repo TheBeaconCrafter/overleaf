@@ -205,6 +205,8 @@ const settings = {
       process.env.OVERLEAF_NAV_TITLE ||
       process.env.OVERLEAF_APP_NAME ||
       'Overleaf Community Edition',
+    // If set to 'true', use servername instead of logo in navbar
+    useServername: process.env.OVERLEAF_NAV_USE_SERVERNAME === 'true',
   },
 
   // The email address which users will be directed to as the main point of

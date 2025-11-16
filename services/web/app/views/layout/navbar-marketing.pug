@@ -10,11 +10,15 @@ nav.navbar.navbar-default.navbar-main.navbar-expand-lg(
 	.container-fluid.navbar-container
 		.navbar-header
 			a.navbar-brand(href='/' aria-label=settings.appName)
-				if settings.nav.custom_logo
-					.navbar-logo(style=`background-image:url("${settings.nav.custom_logo}")`)
-				if nav.title
+				- var defaultLogo = null
+				- if (!settings.nav.useServername && !settings.nav.custom_logo)
+				-   defaultLogo = buildImgPath('ol-brand/logo-horizontal.png')
+				- var logoUrl = settings.nav.custom_logo || defaultLogo
+				if logoUrl
+					.navbar-logo(style=`background-image:url("${logoUrl}")`)
+				if settings.nav.useServername && nav.title
 					.navbar-title #{nav.title}
-				if !nav.title && !settings.nav.custom_logo
+				if !nav.title && !logoUrl
 					.navbar-logo
 
 			- var enableUpgradeButton = projectDashboardReact && usersBestSubscription && (usersBestSubscription.type === 'free' || usersBestSubscription.type === 'standalone-ai-add-on')

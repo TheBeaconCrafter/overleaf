@@ -19,12 +19,15 @@ block append meta
 	- const enableUpgradeButton = projectDashboardReact && usersBestSubscription && (usersBestSubscription.type === 'free' || usersBestSubscription.type === 'standalone-ai-add-on')
 	- const showSignUpLink = hasFeature('registration-page')
 
+	- var defaultLogo = null
+	- if (!settings.nav.useServername && !settings.nav.custom_logo)
+	-   defaultLogo = buildImgPath('ol-brand/logo-horizontal.png')
 	meta(
 		name='ol-navbar'
 		data-type='json'
 		content={
-			customLogo: settings.nav.custom_logo,
-			title: nav.title,
+			customLogo: settings.nav.custom_logo || defaultLogo,
+			title: settings.nav.useServername ? nav.title : undefined,
 			canDisplayAdminMenu,
 			canDisplayAdminRedirect,
 			canDisplayProjectUrlLookup,

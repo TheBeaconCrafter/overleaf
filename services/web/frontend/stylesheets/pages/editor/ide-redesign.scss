@@ -29,6 +29,20 @@
 
   .ide-panel-group-resizing {
     background-color: var(--ide-redesign-resizing-background);
+    
+    .ide-redesign-editor-container,
+    .ide-react-editor-panel,
+    .pdf-viewer,
+    .pdfjs-viewer,
+    .pdfjs-viewer-outer,
+    .ide-redesign-pdf-container {
+      background-color: var(--ide-redesign-resizing-background) !important;
+    }
+    
+    section[id="ide-redesign-editor-panel"],
+    section[id="ide-redesign-pdf-panel"] {
+      background-color: var(--ide-redesign-resizing-background) !important;
+    }
   }
 }
 

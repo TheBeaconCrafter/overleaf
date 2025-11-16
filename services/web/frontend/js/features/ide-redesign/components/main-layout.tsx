@@ -58,6 +58,7 @@ export default function MainLayout() {
               direction="horizontal"
               className={classNames({
                 hidden: view === 'history',
+                'ide-panel-group-resizing': resizing,
               })}
             >
               <Panel

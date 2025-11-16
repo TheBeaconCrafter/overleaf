@@ -62,9 +62,6 @@ export function ProjectListDsNav() {
       <SystemMessages />
       <DefaultNavbar
         {...navbarProps}
-        overleafLogo={
-          activeOverallTheme === 'dark' ? overleafLogoDark : overleafLogo
-        }
         showCloseIcon
       />
       <div className="project-list-wrapper">

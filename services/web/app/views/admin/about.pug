@@ -25,6 +25,10 @@ block content
 											tr
 												th Environment
 												td #{process.env.NODE_ENV || 'development'}
+											if buildDate
+												tr
+													th Last Commit/Build Date
+													td #{buildDate}
 
 							hr
 

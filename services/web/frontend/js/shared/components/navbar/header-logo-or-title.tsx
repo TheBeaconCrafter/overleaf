@@ -10,11 +10,14 @@ export default function HeaderLogoOrTitle({
 }) {
   const { appName } = getMeta('ol-ExposedSettings')
   const logoUrl = customLogo ?? overleafLogo
+  const showLogo = logoUrl || !title
+  const isHorizontalLogo = logoUrl?.includes('logo-horizontal.png')
+  
   return (
     <a href="/" aria-label={appName} className="navbar-brand">
-      {(customLogo || !title) && (
+      {showLogo && (
         <div
-          className="navbar-logo"
+          className={`navbar-logo ${isHorizontalLogo ? 'navbar-logo-horizontal' : ''}`}
           style={logoUrl ? { backgroundImage: `url("${logoUrl}")` } : {}}
         />
       )}

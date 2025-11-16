@@ -53,6 +53,7 @@ services:
 
             OVERLEAF_RIGHT_FOOTER: '[{"text": "<a href=\"https://bcnlab.org\">bcnlab.org</a>"}]'
 
+            # OVERLEAF_NAV_USE_SERVERNAME: 'true' # Use servername instead of logo in navbar
 
             # OVERLEAF_EMAIL_FROM_ADDRESS: "hello@example.com"
 
