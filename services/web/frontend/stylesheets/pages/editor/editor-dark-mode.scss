@@ -1,0 +1,179 @@
+/* Editor Dark Mode Styles */
+
+/* Root/default is already dark, so we mainly need to ensure consistency */
+.editor-dark-mode {
+  /* History panel dark mode fixes */
+  --history-change-list-bg: var(--bg-dark-primary);
+  --history-change-entry-color: var(--content-primary-dark);
+  --history-change-entry-metadata-color: var(--content-secondary-dark);
+  --history-change-entry-hover-bg: var(--bg-dark-secondary);
+  --history-loading-bg: var(--bg-dark-secondary);
+
+  /* PDF Viewer dark background */
+  .pdf-viewer,
+  .pdf {
+    background-color: var(--neutral-20) !important;
+  }
+
+  .pdfViewer .page {
+    background: var(--neutral-10) !important;
+  }
+
+  /* Code editor dark theme */
+  .cm-editor {
+    background-color: var(--bg-dark-primary) !important;
+    color: var(--content-primary-dark) !important;
+  }
+
+  .cm-gutters {
+    background-color: var(--bg-dark-secondary) !important;
+    color: var(--content-secondary-dark) !important;
+  }
+
+  .cm-content {
+    background-color: var(--bg-dark-primary) !important;
+    color: var(--content-primary-dark) !important;
+  }
+
+  /* History version list */
+  .history-version-main-details,
+  .history-version-metadata {
+    color: var(--content-primary-dark) !important;
+  }
+
+  .history-version-metadata-time {
+    color: var(--content-secondary-dark) !important;
+  }
+
+  .history-version-day {
+    background-color: var(--bg-dark-secondary) !important;
+    color: var(--content-primary-dark) !important;
+  }
+
+  .history-version-details {
+    background-color: var(--bg-dark-primary) !important;
+
+    &:hover {
+      background-color: var(--bg-dark-secondary) !important;
+    }
+  }
+
+  /* File tree in history */
+  .history-file-tree {
+    background-color: var(--bg-dark-primary) !important;
+    color: var(--content-primary-dark) !important;
+  }
+
+  .history-file-tree-item-name {
+    color: var(--content-primary-dark) !important;
+  }
+
+  /* Diff viewer */
+  .document-diff-container {
+    background-color: var(--bg-dark-primary) !important;
+  }
+
+  .document-diff-deleted,
+  .document-diff-added {
+    opacity: 0.9;
+  }
+}
+
+/* Light mode override when toggled off */
+body:not(.editor-dark-mode) {
+  /* Force light backgrounds */
+  .pdf-viewer,
+  .pdf {
+    background-color: var(--neutral-90) !important;
+  }
+
+  .pdfViewer .page {
+    background: #ffffff !important;
+  }
+
+  .cm-editor {
+    background-color: var(--bg-light-primary) !important;
+    color: var(--content-primary) !important;
+  }
+
+  .cm-gutters {
+    background-color: var(--bg-light-secondary) !important;
+    color: var(--content-secondary) !important;
+  }
+
+  .cm-content {
+    background-color: var(--bg-light-primary) !important;
+    color: var(--content-primary) !important;
+  }
+
+  /* History in light mode */
+  .history-version-main-details,
+  .history-version-metadata {
+    color: var(--content-primary) !important;
+  }
+
+  .history-version-metadata-time {
+    color: var(--content-secondary) !important;
+  }
+
+  .history-version-day {
+    background-color: var(--bg-light-tertiary) !important;
+    color: var(--content-primary) !important;
+  }
+
+  .history-version-details {
+    background-color: var(--bg-light-primary) !important;
+
+    &:hover {
+      background-color: var(--bg-light-secondary) !important;
+    }
+  }
+
+  .history-file-tree {
+    background-color: var(--bg-light-primary) !important;
+    color: var(--content-primary) !important;
+  }
+
+  .history-file-tree-item-name {
+    color: var(--content-primary) !important;
+  }
+
+  .document-diff-container {
+    background-color: var(--bg-light-primary) !important;
+  }
+}
+
+/* Ensure history panel text is always visible */
+.history-react-container {
+  .history-header {
+    .history-header-details {
+      color: var(--history-react-header-color);
+    }
+  }
+
+  .change-list-item {
+    color: var(--history-change-entry-color);
+  }
+
+  .change-list-item-metadata {
+    color: var(--history-change-entry-metadata-color);
+  }
+}
+
+/* Fix illegible text in history when site-wide dark mode is on */
+body.dark-theme-marketing {
+  .history-version-details,
+  .history-version-main-details,
+  .history-version-metadata,
+  .history-version-day {
+    color: var(--content-primary-dark) !important;
+  }
+
+  .history-version-metadata-time {
+    color: var(--content-secondary-dark) !important;
+  }
+
+  .history-file-tree-item-name {
+    color: var(--content-primary-dark) !important;
+  }
+}

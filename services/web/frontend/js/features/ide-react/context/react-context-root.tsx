@@ -30,6 +30,7 @@ import { UserFeaturesProvider } from '@/shared/context/user-features-context'
 import { UserSettingsProvider } from '@/shared/context/user-settings-context'
 import { IdeRedesignSwitcherProvider } from './ide-redesign-switcher-context'
 import { CommandRegistryProvider } from './command-registry-context'
+import { EditorDarkModeProvider } from '@/features/ide-redesign/context/editor-dark-mode-context'
 
 export const ReactContextRoot: FC<
   React.PropsWithChildren<{
@@ -68,6 +69,7 @@ export const ReactContextRoot: FC<
     IdeRedesignSwitcherProvider,
     CommandRegistryProvider,
     UserFeaturesProvider,
+    EditorDarkModeProvider,
     ...providers,
   }
 
@@ -80,8 +82,9 @@ export const ReactContextRoot: FC<
               <Providers.IdeReactProvider>
                 <Providers.UserProvider>
                   <Providers.SnapshotProvider>
-                    <Providers.DetachProvider>
-                      <Providers.EditorPropertiesProvider>
+                    <Providers.EditorDarkModeProvider>
+                      <Providers.DetachProvider>
+                        <Providers.EditorPropertiesProvider>
                         <Providers.EditorViewProvider>
                           <Providers.EditorOpenDocProvider>
                             <Providers.EditorProvider>
@@ -125,8 +128,9 @@ export const ReactContextRoot: FC<
                             </Providers.EditorProvider>
                           </Providers.EditorOpenDocProvider>
                         </Providers.EditorViewProvider>
-                      </Providers.EditorPropertiesProvider>
-                    </Providers.DetachProvider>
+                        </Providers.EditorPropertiesProvider>
+                      </Providers.DetachProvider>
+                    </Providers.EditorDarkModeProvider>
                   </Providers.SnapshotProvider>
                 </Providers.UserProvider>
               </Providers.IdeReactProvider>

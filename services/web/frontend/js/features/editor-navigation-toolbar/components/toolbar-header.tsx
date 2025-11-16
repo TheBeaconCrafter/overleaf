@@ -19,6 +19,7 @@ import TryNewEditorButton from '../try-new-editor-button'
 import { OnlineUser } from '@/features/ide-react/context/online-users-context'
 import { Cobranding } from '../../../../../types/cobranding'
 import { canUseNewEditor } from '@/features/ide-redesign/utils/new-editor-utils'
+import DarkModeToggleButton from './dark-mode-toggle-button'
 
 const [publishModalModules] = importOverleafModules('publishModal') as {
   import: { default: ElementType }
@@ -143,6 +144,8 @@ const ToolbarHeader = React.memo(function ToolbarHeader({
             )}
 
             <LayoutDropdownButton />
+
+            <DarkModeToggleButton />
 
             {chatEnabled && chatVisible && (
               <ChatToggleButton

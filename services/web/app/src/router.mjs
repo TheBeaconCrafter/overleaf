@@ -1255,9 +1255,13 @@ async function initialize(webRouter, privateApiRouter, publicApiRouter) {
     )
 
     // qol: redirect CE broken links to overleaf
-    webRouter.get(['/learn*', '/templates*', '/blog*', '/latex*', '/for/*', '/contact*'], (req, res) => {
-      res.redirect(301, 'https://www.overleaf.com')
-    })
+    webRouter.get(
+      ['/learn*', '/templates*', '/blog*', '/latex*', '/for/*', '/contact*'],
+      (req, res) => {
+        const encoded = encodeURI(req.originalUrl)
+        res.redirect(301, `https://www.overleaf.com${encoded}`)
+      }
+    )
 
   }
 

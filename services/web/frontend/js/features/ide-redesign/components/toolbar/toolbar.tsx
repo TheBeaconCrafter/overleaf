@@ -5,6 +5,7 @@ import { OnlineUsers } from './online-users'
 import ShareProjectButton from './share-project-button'
 import ChangeLayoutButton from './change-layout-button'
 import ShowHistoryButton from './show-history-button'
+import DarkModeToggleButton from './dark-mode-toggle-button'
 import { useLayoutContext } from '@/shared/context/layout-context'
 import BackToEditorButton from '@/features/editor-navigation-toolbar/components/back-to-editor-button'
 import { useCallback } from 'react'
@@ -61,6 +62,7 @@ export const Toolbar = () => {
         {shouldDisplaySubmitButton && cobranding && (
           <SubmitProjectButton cobranding={cobranding} />
         )}
+        <DarkModeToggleButton />
         <ShareProjectButton />
         {getMeta('ol-showUpgradePrompt') && <UpgradeButton />}
       </div>
