@@ -318,7 +318,6 @@ history-root {
   }
 
   .history-version-day,
-  .history-version-change-action,
   .history-version-metadata-users,
   .history-version-origin,
   .history-version-saved-by {
@@ -326,6 +325,8 @@ history-root {
   }
 
   .history-version-change-action {
+    color: var(--history-change-entry-color);
+    font-weight: 600;
     overflow-wrap: anywhere;
   }
 

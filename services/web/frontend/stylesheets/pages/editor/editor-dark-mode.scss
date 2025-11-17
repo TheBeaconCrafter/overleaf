@@ -1,3 +1,23 @@
+:root {
+  --editor-selection-bg: color-mix(
+    in srgb,
+    var(--bg-accent-01) 30%,
+    transparent
+  );
+  --editor-selection-color: var(--content-primary);
+}
+
+::selection {
+  background-color: var(--editor-selection-bg);
+  color: var(--editor-selection-color);
+}
+
+.cm-editor .cm-selectionBackground,
+.cm-editor .cm-content ::selection {
+  background-color: var(--editor-selection-bg) !important;
+  color: var(--editor-selection-color) !important;
+}
+
 /* Editor Dark Mode Styles */
 
 /* Root/default is already dark, so we mainly need to ensure consistency */
@@ -8,17 +28,6 @@
     transparent
   );
   --editor-selection-color: var(--bg-light-primary);
-
-  ::selection {
-    background-color: var(--editor-selection-bg);
-    color: var(--editor-selection-color);
-  }
-
-  .cm-editor .cm-selectionBackground,
-  .cm-editor .cm-content ::selection {
-    background-color: var(--editor-selection-bg) !important;
-    color: var(--editor-selection-color) !important;
-  }
 
   /* History panel dark mode fixes */
   --history-change-list-bg: var(--bg-dark-primary);
