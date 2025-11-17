@@ -2,6 +2,13 @@ import { useUserSettingsContext } from '@/shared/context/user-settings-context'
 import getMeta from '@/utils/meta'
 import { isSplitTestEnabled, getSplitTestVariant } from '@/utils/splitTestUtils'
 
+const disableNewEditorToggleGlobally =
+  new URLSearchParams(window.location.search).get(
+    'disable-new-editor-toggle'
+  ) === 'true'
+
+const allowGlobalNewEditorToggle = !disableNewEditorToggleGlobally
+
 const ignoringUserCutoffDate =
   new URLSearchParams(window.location.search).get('skip-new-user-check') ===
   'true'
@@ -16,6 +23,16 @@ const { isOverleaf } = getMeta('ol-ExposedSettings')
 
 const SPLIT_TEST_USER_CUTOFF_DATE = new Date(Date.UTC(2025, 8, 23, 13, 0, 0)) // 2pm British Summer Time on September 23, 2025
 const NEW_USER_CUTOFF_DATE = new Date(Date.UTC(2025, 10, 12, 12, 0, 0)) // 12pm GMT on November 12, 2025
+
+const legacyCanUseNewEditorAsNewUser = () => {
+  const newUserTestVariant = getSplitTestVariant('editor-redesign-new-users')
+  return (
+    isOverleaf &&
+    (isNewUser() || (isSplitTestUser() && newUserTestVariant !== 'default'))
+  )
+}
+
+const hasGlobalNewEditorToggle = () => allowGlobalNewEditorToggle
 
 export const isNewUser = () => {
   if (existingUserOverride) return false
@@ -42,18 +59,23 @@ export const isSplitTestUser = () => {
 }
 
 export const canUseNewEditorAsExistingUser = () => {
-  return !canUseNewEditorAsNewUser() && isSplitTestEnabled('editor-redesign')
+  if (hasGlobalNewEditorToggle()) {
+    return true
+  }
+  return !legacyCanUseNewEditorAsNewUser() && isSplitTestEnabled('editor-redesign')
 }
 
 export const canUseNewEditorAsNewUser = () => {
-  const newUserTestVariant = getSplitTestVariant('editor-redesign-new-users')
-  return (
-    isOverleaf &&
-    (isNewUser() || (isSplitTestUser() && newUserTestVariant !== 'default'))
-  )
+  if (hasGlobalNewEditorToggle()) {
+    return true
+  }
+  return legacyCanUseNewEditorAsNewUser()
 }
 
 export const canUseNewEditor = () => {
+  if (hasGlobalNewEditorToggle()) {
+    return true
+  }
   return canUseNewEditorAsExistingUser() || canUseNewEditorAsNewUser()
 }
 

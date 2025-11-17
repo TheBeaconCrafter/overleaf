@@ -1,6 +1,6 @@
 @use 'sass:math';
 
-:root {
+@mixin ide-redesign-toolbar-dark-theme {
   --redesign-toolbar-home-button-hover-background: var(--bg-dark-secondary);
   --redesign-toolbar-border-divider: var(--border-divider-dark);
   --redesign-toolbar-background: var(--bg-dark-primary);
@@ -11,7 +11,7 @@
   --redesign-toolbar-feedback-link-color: var(--link-ui-dark);
 }
 
-@include theme('light') {
+@mixin ide-redesign-toolbar-light-theme {
   --redesign-toolbar-home-button-hover-background: var(--neutral-20);
   --redesign-toolbar-border-divider: var(--border-divider);
   --redesign-toolbar-background: var(--bg-light-primary);
@@ -20,6 +20,23 @@
   --redesign-subdued-button-color: var(--content-primary);
   --redesign-subdued-button-hover-background: var(--bg-light-tertiary);
   --redesign-toolbar-feedback-link-color: var(--link-ui);
+}
+
+:root {
+  @include ide-redesign-toolbar-dark-theme;
+}
+
+html.editor-dark-mode,
+body.editor-dark-mode {
+  @include ide-redesign-toolbar-dark-theme;
+}
+
+@include theme('light') {
+  @include ide-redesign-toolbar-light-theme;
+}
+
+body:not(.editor-dark-mode) {
+  @include ide-redesign-toolbar-light-theme;
 }
 
 .ide-redesign-toolbar {
@@ -235,5 +252,9 @@
 }
 
 .ide-redesign-beta-button.btn.btn-secondary {
+  @include editor-switcher-button;
+}
+
+.ide-redesign-switch-back-button.btn.btn-secondary {
   @include editor-switcher-button;
 }

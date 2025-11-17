@@ -34,6 +34,7 @@ Beaconleaf is a fork of Overleaf Community Edition with the following enhancemen
 - **Global Dark Mode**: Site-wide dark theme support for improved user experience
 - **Administrator Tools**: Enhanced administrative features for better server management
 - **Symbol Palette**: Professional symbol palette similar to Overleaf Pro, providing quick access to mathematical and special characters
+- **New editor design**: Enables Overleaf's new editor design on community edition (with a toggle of course)
 
 ## Planned Features
 

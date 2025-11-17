@@ -195,6 +195,14 @@
   }
 }
 
+html.editor-dark-mode,
+body.editor-dark-mode {
+  .ide-redesign-main {
+    --file-tree-item-selected-bg: var(--bg-accent-01);
+    --file-tree-item-selected-color: var(--bg-light-primary);
+  }
+}
+
 .ide-react-file-tree-panel {
   display: flex;
   flex-direction: column;

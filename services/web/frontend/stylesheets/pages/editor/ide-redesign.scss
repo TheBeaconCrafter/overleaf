@@ -1,15 +1,32 @@
-:root {
+@mixin ide-redesign-dark-theme {
   --ide-redesign-background: var(--bg-dark-primary);
   --ide-redesign-color: var(--content-primary-dark);
   --ide-redesign-resizing-background: var(--bg-dark-primary);
   --ide-redesign-color-scheme: dark;
 }
 
-@include theme('light') {
+@mixin ide-redesign-light-theme {
   --ide-redesign-background: var(--bg-light-primary);
   --ide-redesign-color: var(--content-primary);
   --ide-redesign-resizing-background: var(--white);
   --ide-redesign-color-scheme: light;
+}
+
+:root {
+  @include ide-redesign-dark-theme;
+}
+
+html.editor-dark-mode,
+body.editor-dark-mode {
+  @include ide-redesign-dark-theme;
+}
+
+@include theme('light') {
+  @include ide-redesign-light-theme;
+}
+
+body:not(.editor-dark-mode) {
+  @include ide-redesign-light-theme;
 }
 
 .ide-redesign-body {

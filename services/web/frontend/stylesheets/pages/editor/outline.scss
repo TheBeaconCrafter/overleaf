@@ -119,6 +119,14 @@
   }
 }
 
+html.editor-dark-mode,
+body.editor-dark-mode {
+  .ide-redesign-main {
+    --outline-item-highlight-bg: var(--bg-accent-01);
+    --outline-item-highlight-color: var(--bg-light-primary);
+  }
+}
+
 .outline-container {
   width: 100%;
   height: 100%;

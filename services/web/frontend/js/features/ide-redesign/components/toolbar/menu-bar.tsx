@@ -30,7 +30,7 @@ import { useSurveyUrl } from '../../hooks/use-survey-url'
 import getMeta from '@/utils/meta'
 import EditorCloneProjectModalWrapper from '@/features/clone-project-modal/components/editor-clone-project-modal-wrapper'
 import useOpenProject from '@/shared/hooks/use-open-project'
-import { canUseNewEditorAsExistingUser } from '../../utils/new-editor-utils'
+import { useIsNewEditorEnabled } from '../../utils/new-editor-utils'
 
 export const ToolbarMenuBar = () => {
   const { t } = useTranslation()
@@ -44,7 +44,7 @@ export const ToolbarMenuBar = () => {
   const [showWordCountModal, setShowWordCountModal] = useState(false)
   const [showCloneProjectModal, setShowCloneProjectModal] = useState(false)
   const openProject = useOpenProject()
-  const showEditorSwitchMenuOption = canUseNewEditorAsExistingUser()
+  const showEditorSwitchMenuOption = useIsNewEditorEnabled()
 
   const anonymous = getMeta('ol-anonymous')
 
