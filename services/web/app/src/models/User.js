@@ -203,6 +203,11 @@ const UserSchema = new Schema(
     aiErrorAssistant: {
       enabled: { type: Boolean, default: true },
     },
+    sloptex: {
+      enabled: { type: Boolean, default: false },
+      apiKeyEncrypted: { type: String, default: null },
+      updatedAt: { type: Date },
+    },
     alphaProgram: { type: Boolean, default: false }, // experimental features
     betaProgram: { type: Boolean, default: false },
     labsProgram: { type: Boolean, default: false },

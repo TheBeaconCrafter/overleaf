@@ -55,6 +55,7 @@ import LinkedFilesRouter from './Features/LinkedFiles/LinkedFilesRouter.mjs'
 import TemplatesRouter from './Features/Templates/TemplatesRouter.mjs'
 import UserMembershipRouter from './Features/UserMembership/UserMembershipRouter.mjs'
 import SystemMessageController from './Features/SystemMessages/SystemMessageController.mjs'
+import SloptexController from './Features/Sloptex/SloptexController.mjs'
 import AnalyticsRegistrationSourceMiddleware from './Features/Analytics/AnalyticsRegistrationSourceMiddleware.mjs'
 import AnalyticsUTMTrackingMiddleware from './Features/Analytics/AnalyticsUTMTrackingMiddleware.mjs'
 import CaptchaMiddleware from './Features/Captcha/CaptchaMiddleware.mjs'
@@ -160,6 +161,14 @@ const rateLimiters = {
   readOnlyToken: new RateLimiter('read-only-token', {
     points: 15,
     duration: 60,
+  }),
+  sloptexGenerate: new RateLimiter('sloptex-generate', {
+    points: 30,
+    duration: 60,
+  }),
+  sloptexConfig: new RateLimiter('sloptex-config', {
+    points: 10,
+    duration: 300,
   }),
   removeProjectFromTag: new RateLimiter('remove-project-from-tag', {
     points: 30,
@@ -304,6 +313,29 @@ async function initialize(webRouter, privateApiRouter, publicApiRouter) {
     '/user/settings',
     AuthenticationController.requireLogin(),
     UserController.updateUserSettings
+  )
+  webRouter.get(
+    '/sloptex/status',
+    AuthenticationController.requireLogin(),
+    SloptexController.getStatus
+  )
+  webRouter.post(
+    '/sloptex/api-key',
+    AuthenticationController.requireLogin(),
+    RateLimiterMiddleware.rateLimit(rateLimiters.sloptexConfig),
+    SloptexController.saveApiKey
+  )
+  webRouter.delete(
+    '/sloptex/api-key',
+    AuthenticationController.requireLogin(),
+    RateLimiterMiddleware.rateLimit(rateLimiters.sloptexConfig),
+    SloptexController.deleteApiKey
+  )
+  webRouter.post(
+    '/sloptex/generate',
+    AuthenticationController.requireLogin(),
+    RateLimiterMiddleware.rateLimit(rateLimiters.sloptexGenerate),
+    SloptexController.generate
   )
   webRouter.post(
     '/user/password/update',

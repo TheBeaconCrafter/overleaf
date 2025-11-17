@@ -86,6 +86,17 @@ const overrides = {
     },
   },
 
+  sloptex: {
+    enabled: true,
+    defaultModel: 'gemini-2.5-flash',
+    accessTokenEncryptorOptions: {
+      cipherLabel: '2023.1-v3',
+      cipherPasswords: {
+        '2023.1-v3': 'this-is-a-weak-secret-for-tests-web-2023.1-v3',
+      },
+    },
+  },
+
   analytics: {
     enabled: true,
     hashedEmailSalt: 'acceptance-test-salt',

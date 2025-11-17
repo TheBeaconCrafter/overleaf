@@ -20,6 +20,7 @@ import MathPreviewTooltip from './math-preview-tooltip'
 import { useToolbarMenuBarEditorCommands } from '@/features/ide-redesign/hooks/use-toolbar-menu-editor-commands'
 import { useProjectContext } from '@/shared/context/project-context'
 import { useFeatureFlag } from '@/shared/context/split-test-context'
+import { SloptexProvider } from '@/features/sloptex/context/sloptex-context'
 
 // TODO: remove this when definitely no longer used
 export * from './codemirror-context'
@@ -60,7 +61,9 @@ function CodeMirrorEditor() {
   return (
     <CodeMirrorStateContext.Provider value={state}>
       <CodeMirrorViewContext.Provider value={viewRef.current}>
-        <CodeMirrorEditorComponents />
+        <SloptexProvider>
+          <CodeMirrorEditorComponents />
+        </SloptexProvider>
       </CodeMirrorViewContext.Provider>
     </CodeMirrorStateContext.Provider>
   )

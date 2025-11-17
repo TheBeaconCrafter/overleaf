@@ -28,6 +28,46 @@ const intFromEnv = function (name, defaultValue) {
   return parseInt(process.env[name], 10) || defaultValue
 }
 
+const sloptexCipherLabel = process.env.SLOPTEX_CIPHER_LABEL
+const sloptexCipherPassword = process.env.SLOPTEX_CIPHER_PASSWORD
+let sloptexAccessTokenEncryptorOptions
+if (sloptexCipherLabel && sloptexCipherPassword) {
+  sloptexAccessTokenEncryptorOptions = {
+    cipherLabel: sloptexCipherLabel,
+    cipherPasswords: {
+      [sloptexCipherLabel]: sloptexCipherPassword,
+    },
+  }
+}
+
+// Only require cipher config if Sloptex is explicitly enabled
+// During build time, env vars may not be set, so we allow the fallback
+// The service will check at runtime if encryption is properly configured
+if (!sloptexAccessTokenEncryptorOptions && process.env.SLOPTEX_ENABLED === 'true') {
+  throw new Error(
+    'Sloptex is explicitly enabled (SLOPTEX_ENABLED=true) but SLOPTEX_CIPHER_LABEL and SLOPTEX_CIPHER_PASSWORD are not configured. ' +
+    'Please set these environment variables or set SLOPTEX_ENABLED=false'
+  )
+}
+
+// Provide a fallback for development/build time when env vars aren't set
+if (!sloptexAccessTokenEncryptorOptions) {
+  const fallbackLabel =
+    process.env.SLOPTEX_FALLBACK_CIPHER_LABEL || 'sloptex-dev-2024'
+  const fallbackPassword =
+    process.env.SLOPTEX_FALLBACK_CIPHER_PASSWORD ||
+    process.env.SESSION_SECRET ||
+    process.env.SESSION_SECRET_UPCOMING ||
+    'change-me-sloptex-dev-secret'
+
+  sloptexAccessTokenEncryptorOptions = {
+    cipherLabel: fallbackLabel,
+    cipherPasswords: {
+      [fallbackLabel]: fallbackPassword,
+    },
+  }
+}
+
 const defaultTextExtensions = [
   'tex',
   'latex',
@@ -844,6 +884,12 @@ module.exports = {
 
   analytics: {
     enabled: false,
+  },
+
+  sloptex: {
+    enabled: process.env.SLOPTEX_ENABLED !== 'false',
+    defaultModel: process.env.SLOPTEX_DEFAULT_MODEL || 'gemini-2.5-flash',
+    accessTokenEncryptorOptions: sloptexAccessTokenEncryptorOptions,
   },
 
   compileBodySizeLimitMb: process.env.COMPILE_BODY_SIZE_LIMIT_MB || 7,

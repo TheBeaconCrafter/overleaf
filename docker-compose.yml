@@ -53,6 +53,11 @@ services:
 
             OVERLEAF_RIGHT_FOOTER: '[{"text": "<a href=\"https://bcnlab.org\">bcnlab.org</a>"}]'
 
+            SLOPTEX_ENABLED: 'true'
+            SLOPTEX_DEFAULT_MODEL: 'gemini-2.5-flash'
+            SLOPTEX_CIPHER_LABEL: '2023.1-v3'
+            SLOPTEX_CIPHER_PASSWORD: 'this-is-a-weak-secret-for-tests-web-2023.1-v3'
+
             # OVERLEAF_NAV_USE_SERVERNAME: 'true' # Use servername instead of logo in navbar
 
             # OVERLEAF_EMAIL_FROM_ADDRESS: "hello@example.com"

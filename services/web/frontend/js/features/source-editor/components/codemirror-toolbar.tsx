@@ -35,6 +35,8 @@ import classNames from 'classnames'
 import { useUserSettingsContext } from '@/shared/context/user-settings-context'
 import { useFeatureFlag } from '@/shared/context/split-test-context'
 import importOverleafModules from '../../../../macros/import-overleaf-module.macro'
+import { useSloptex } from '@/features/sloptex/context/sloptex-context'
+import { SloptexActionBar } from '@/features/sloptex/components/sloptex-action-bar'
 
 const sourceEditorToolbarComponents = importOverleafModules(
   'sourceEditorToolbarComponents'
@@ -59,6 +61,7 @@ const Toolbar = memo(function Toolbar() {
     userSettings: { breadcrumbs },
   } = useUserSettingsContext()
   const visualPreviewEnabled = useFeatureFlag('visual-preview')
+  const sloptex = useSloptex()
 
   const [overflowed, setOverflowed] = useState(false)
 
@@ -178,6 +181,9 @@ const Toolbar = memo(function Toolbar() {
               languageName={languageName}
               visual={visual}
               listDepth={listDepth}
+              sloptexOpen={sloptex.panelOpen}
+              onToggleSloptex={() => sloptex.setPanelOpen(!sloptex.panelOpen)}
+              sloptexEnabled={sloptex.status?.enabled !== false}
             />
           )}
 
@@ -195,6 +201,7 @@ const Toolbar = memo(function Toolbar() {
                   languageName={languageName}
                   visual={visual}
                   listDepth={listDepth}
+                  sloptexEnabled={false}
                 />
               </ToolbarOverflow>
             )}
@@ -210,6 +217,7 @@ const Toolbar = memo(function Toolbar() {
             <DetachCompileButtonWrapper />
           </div>
         </div>
+        <SloptexActionBar isOpen={sloptex.panelOpen} view={view} />
         {sourceEditorToolbarComponents.map(
           ({ import: { default: Component }, path }) => (
             <Component key={path} />

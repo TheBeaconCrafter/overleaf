@@ -17,18 +17,27 @@ import { useProjectContext } from '@/shared/context/project-context'
 import { useEditorPropertiesContext } from '@/features/ide-react/context/editor-properties-context'
 import { usePermissionsContext } from '@/features/ide-react/context/permissions-context'
 
-export const ToolbarItems: FC<{
+type ToolbarItemsProps = {
   state: EditorState
   overflowed?: Set<string>
   languageName?: string
   visual: boolean
   listDepth: number
-}> = memo(function ToolbarItems({
+  sloptexOpen?: boolean
+  onToggleSloptex?: () => void
+  sloptexEnabled?: boolean
+  compact?: boolean
+}
+
+export const ToolbarItems: FC<ToolbarItemsProps> = memo(function ToolbarItems({
   state,
   overflowed,
   languageName,
   visual,
   listDepth,
+  sloptexOpen,
+  onToggleSloptex,
+  sloptexEnabled = false,
 }) {
   const { t } = useTranslation()
   const { showSymbolPalette, toggleSymbolPalette } =
@@ -153,6 +162,17 @@ export const ToolbarItems: FC<{
               />
               <InsertFigureDropdown />
               {writefullInstance ? <TableDropdown /> : <LegacyTableDropdown />}
+              {sloptexEnabled && onToggleSloptex && (
+                <ToolbarButton
+                  id="toolbar-sloptex"
+                  label={t('sloptex_button_label')}
+                  icon="robot"
+                  active={Boolean(sloptexOpen)}
+                  command={() => {
+                    onToggleSloptex()
+                  }}
+                />
+              )}
             </div>
           )}
           {showGroup('group-list') && (

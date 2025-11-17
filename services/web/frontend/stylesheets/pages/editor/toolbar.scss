@@ -46,6 +46,7 @@
   .ol-cm-toolbar-wrapper {
     flex: 1;
     width: 100%;
+    position: relative;
   }
 
   .ol-cm-toolbar-wrapper-indented {
@@ -539,4 +540,198 @@
   max-height: 39px;
   font-size: var(--font-size-01);
   margin-right: var(--spacing-04);
+}
+
+.ol-cm-toolbar-wrapper {
+  position: relative;
+}
+
+.sloptex-toolbar-row {
+  background-color: var(--editor-toolbar-bg);
+  border-top: 1px solid var(--toolbar-border-color);
+  padding: var(--spacing-02) var(--spacing-03);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-02);
+}
+
+.sloptex-toolbar-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-03);
+  align-items: center;
+}
+
+.sloptex-action-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-02);
+}
+
+.sloptex-divider {
+  font-weight: 600;
+  color: var(--content-secondary-dark);
+  margin: 0 var(--spacing-02);
+  user-select: none;
+}
+
+.sloptex-prompt-panel {
+  border-top: 1px solid var(--toolbar-border-color);
+  padding: var(--spacing-03);
+  background: var(--bg-dark-tertiary);
+}
+
+.sloptex-field-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-01);
+}
+
+.sloptex-prompt-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-02);
+}
+
+.sloptex-result {
+  background: var(--bg-dark-primary);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-02);
+}
+
+.sloptex-result pre {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.sloptex-selection-bubble {
+  position: absolute;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-02);
+}
+
+.sloptex-selection-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-02);
+  background: var(--bg-dark-primary);
+  padding: var(--spacing-02);
+  border-radius: var(--border-radius-base);
+  min-width: 220px;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 0.35);
+}
+
+.sloptex-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  
+  .button-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+  
+  .button-content > span:not(.sr-only):not(.material-symbols) {
+    display: none;
+  }
+  
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  .material-symbols {
+    display: inline-block !important;
+    font-size: 18px;
+    line-height: 1;
+    width: auto;
+    height: auto;
+    margin: 0;
+  }
+}
+
+.sloptex-search-bar {
+  display: flex;
+  gap: var(--spacing-02);
+}
+
+.sloptex-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-02);
+}
+
+.sloptex-inline-diff {
+  border: 1px solid var(--toolbar-border-color);
+  border-radius: var(--border-radius-base);
+  background: var(--bg-dark-primary);
+  padding: var(--spacing-02);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-02);
+}
+
+.sloptex-inline-diff-header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-02);
+  font-size: var(--font-size-02);
+}
+
+.sloptex-inline-diff-body {
+  max-height: 200px;
+  overflow: auto;
+  font-family: var(--font-family-monospace);
+  background: var(--bg-dark-tertiary);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-02);
+}
+
+.sloptex-inline-diff-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sloptex-inline-line {
+  display: flex;
+  gap: var(--spacing-02);
+  padding: 2px var(--spacing-01);
+  border-radius: var(--border-radius-sm);
+  white-space: pre-wrap;
+}
+
+.sloptex-inline-line-sign {
+  width: 12px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.sloptex-inline-line--added {
+  background: color-mix(in srgb, var(--bg-success-01) 20%, transparent);
+}
+
+.sloptex-inline-line--removed {
+  background: color-mix(in srgb, var(--bg-danger-01) 20%, transparent);
+}
+
+.sloptex-inline-diff-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-02);
 }
