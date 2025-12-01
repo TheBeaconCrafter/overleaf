@@ -1061,6 +1061,8 @@ module.exports = {
     'launchpad',
     'server-ce-scripts',
     'user-activate',
+    'admin-panel',
+    'sandboxed-compiles',
     'symbol-palette',
   ],
   viewIncludes: {},
