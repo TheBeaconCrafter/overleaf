@@ -6,6 +6,7 @@ import TpdsUpdateSender from '../ThirdPartyDataStore/TpdsUpdateSender.mjs'
 import TpdsProjectFlusher from '../ThirdPartyDataStore/TpdsProjectFlusher.mjs'
 import EditorRealTimeController from '../Editor/EditorRealTimeController.mjs'
 import SystemMessageManager from '../SystemMessages/SystemMessageManager.mjs'
+import Modules from '../../infrastructure/Modules.mjs'
 import ActiveUsersManager from './ActiveUsersManager.mjs'
 import UserDeleter from '../User/UserDeleter.mjs'
 import UserUpdater from '../User/UserUpdater.mjs'
@@ -34,16 +35,23 @@ const AdminController = {
       )
     }
 
-    SystemMessageManager.getMessagesFromDB(function (error, systemMessages) {
-      if (error) {
-        return next(error)
+    SystemMessageManager.getMessagesFromDB(
+      async function (error, systemMessages) {
+        if (error) {
+          return next(error)
+        }
+        const privilegesMatrixResults = await Modules.promises.hooks.fire(
+          'getPrivilegesMatrix'
+        )
+        const privilegesMatrix = privilegesMatrixResults[0] || null
+        res.render('admin/index', {
+          title: 'System Admin',
+          openSockets,
+          systemMessages,
+          privilegesMatrix,
+        })
       }
-      res.render('admin/index', {
-        title: 'System Admin',
-        openSockets,
-        systemMessages,
-      })
-    })
+    )
   },
 
   disconnectAllUsers: (req, res) => {
@@ -175,10 +183,10 @@ const AdminController = {
   async activeUsers(req, res, next) {
     try {
       const { users, onlineCount} = await ActiveUsersManager.getAllUsersWithStatus()
-      
+
       logger.info(
-        { 
-          totalUsers: users?.length || 0, 
+        {
+          totalUsers: users?.length || 0,
           editingCount: onlineCount,
           sampleUser: users?.[0] ? {
             email: users[0].email,
@@ -189,7 +197,7 @@ const AdminController = {
         },
         'Rendering editing users page'
       )
-      
+
       res.render('admin/active-users', {
         title: 'Editing Users',
         users: users || [],
@@ -208,17 +216,17 @@ const AdminController = {
       if (!user) {
         return res.status(404).json({ error: 'User not found' })
       }
-      
+
       const OneTimeTokenHandler = await import('../Security/OneTimeTokenHandler.js').then(m => m.default)
       const data = { user_id: user._id.toString(), email: user.email }
       const token = await OneTimeTokenHandler.promises.getNewToken('password', data)
-      
+
       const resetUrl = `${Settings.siteUrl}/user/password/set?passwordResetToken=${token}&email=${encodeURIComponent(user.email)}`
-      
+
       logger.info({ userId, adminId: req.session?.user?._id }, 'Admin generated password reset link')
-      
-      res.json({ 
-        success: true, 
+
+      res.json({
+        success: true,
         message: 'Password reset link generated',
         resetUrl: resetUrl
       })
@@ -232,16 +240,16 @@ const AdminController = {
     const userId = req.params.userId
     try {
       const adminUser = await UserGetter.promises.getUser(req.session.user._id)
-      
+
       await UserDeleter.promises.deleteUser(userId, {
         deleterUser: adminUser,
         ipAddress: req.ip,
         skipEmail: false,
         force: false,
       })
-      
+
       logger.warn({ userId, adminId: adminUser._id }, 'Admin deleted user')
-      
+
       res.json({ success: true, message: 'User deleted successfully' })
     } catch (error) {
       logger.error({ error, userId }, 'Error deleting user')
@@ -252,26 +260,26 @@ const AdminController = {
   async changeUserEmail(req, res, next) {
     const userId = req.params.userId
     const { newEmail } = req.body
-    
+
     if (!newEmail || !newEmail.includes('@')) {
       return res.status(400).json({ error: 'Invalid email address' })
     }
-    
+
     try {
       const adminUser = await UserGetter.promises.getUser(req.session.user._id)
-      
+
       const existingUser = await UserGetter.promises.getUserByAnyEmail(newEmail)
       if (existingUser && existingUser._id.toString() !== userId) {
         return res.status(400).json({ error: 'Email already in use' })
       }
-      
+
       await UserUpdater.promises.changeEmailAddress(userId, newEmail)
-      
+
       logger.warn(
         { userId, newEmail, adminId: adminUser._id },
         'Admin changed user email'
       )
-      
+
       res.json({ success: true, message: 'Email changed successfully' })
     } catch (error) {
       logger.error({ error, userId, newEmail }, 'Error changing user email')

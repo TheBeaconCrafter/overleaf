@@ -15,6 +15,11 @@ import HistoryContainer from '@/features/ide-react/components/history-container'
 import { DefaultSynctexControl } from '@/features/pdf-preview/components/detach-synctex-control'
 import importOverleafModules from '../../../../macros/import-overleaf-module.macro'
 
+const mainEditorLayoutPanels: Array<{
+  import: { default: ElementType }
+  path: string
+}> = importOverleafModules('mainEditorLayoutPanels')
+
 const mainEditorLayoutModalsModules: Array<{
   import: { default: ElementType }
   path: string
@@ -31,7 +36,6 @@ export default function MainLayout() {
     pdfIsOpen: isPdfOpen,
     pdfPanelRef,
   } = usePdfPane()
-
   const { view, pdfLayout } = useLayoutContext()
 
   const editorIsOpen =
@@ -123,6 +127,11 @@ export default function MainLayout() {
               </Panel>
             </PanelGroup>
           </Panel>
+          {mainEditorLayoutPanels.map(
+            ({ import: { default: Component }, path }, i) => {
+              return <Component key={path} order={i + 3} />
+            }
+          )}
         </PanelGroup>
       </div>
       {mainEditorLayoutModalsModules.map(
