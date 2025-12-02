@@ -1,6 +1,6 @@
 import logger from '@overleaf/logger'
-import { db } from '../../infrastructure/mongodb.js'
-import RedisWrapper from '../../infrastructure/RedisWrapper.js'
+import { db } from '../../infrastructure/mongodb.mjs'
+import RedisWrapper from '../../infrastructure/RedisWrapper.mjs'
 import Settings from '@overleaf/settings'
 
 const realtimeRedis = RedisWrapper.client('realtime')

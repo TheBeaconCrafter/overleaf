@@ -47,10 +47,9 @@ async function loadModulesImpl() {
     const module = await import(
       Path.join(MODULE_BASE_PATH, moduleName, 'index.mjs')
     )
-    /** @type {WebModule & {name: string}} */
+    /** @type {WebModule} */
     const loadedModule = module.default || module
 
-    loadedModule.name = moduleName
     _modules.push(loadedModule)
     if (loadedModule.viewIncludes) {
       throw new Error(
