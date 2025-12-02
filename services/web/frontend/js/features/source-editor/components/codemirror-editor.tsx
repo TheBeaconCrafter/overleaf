@@ -62,7 +62,7 @@ function CodeMirrorEditor() {
     <CodeMirrorStateContext.Provider value={state}>
       <CodeMirrorViewContext.Provider value={viewRef.current}>
         <SloptexProvider>
-          <CodeMirrorEditorComponents />
+        <CodeMirrorEditorComponents />
         </SloptexProvider>
       </CodeMirrorViewContext.Provider>
     </CodeMirrorStateContext.Provider>

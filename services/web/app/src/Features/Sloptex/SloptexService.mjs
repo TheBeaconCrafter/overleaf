@@ -4,7 +4,7 @@ import OError from '@overleaf/o-error'
 import { GoogleGenAI } from '@google/genai'
 
 const sloptexSettings = Settings.sloptex || {}
-const DEFAULT_MODEL = sloptexSettings.defaultModel || 'gemini-2.5-flash'
+const DEFAULT_MODEL = sloptexSettings.defaultModel || 'gemini-2.5-flash-lite'
 
 let encryptor
 if (sloptexSettings.accessTokenEncryptorOptions) {

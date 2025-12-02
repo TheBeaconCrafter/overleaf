@@ -14,7 +14,6 @@ import { EditorView } from '@codemirror/view'
 import { replaceSelection, getPrimarySelection } from '../utils'
 import { SloptexSettingsModal } from './sloptex-settings-modal'
 import { SloptexSelectionOverlay } from './sloptex-selection-overlay'
-import { SloptexPromptPanel } from './sloptex-prompt-panel'
 import { diffLines } from 'diff'
 import { SloptexInlineEditState } from '../types'
 
@@ -29,13 +28,6 @@ export const SloptexActionBar = memo(function SloptexActionBar({
 }: Props) {
   const { t } = useTranslation()
   const sloptex = useSloptex()
-  const [activeAction, setActiveAction] = useState<SloptexActionId | null>(null)
-  const [promptText, setPromptText] = useState('')
-  const [result, setResult] = useState<string | null>(null)
-  const [actionOptions, setActionOptions] = useState<Record<string, any> | null>(
-    null
-  )
-  const [isRunning, setIsRunning] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [inlineEdit, setInlineEdit] = useState<SloptexInlineEditState | null>(
     null
@@ -51,74 +43,6 @@ export const SloptexActionBar = memo(function SloptexActionBar({
     return false
   }, [sloptex])
 
-  const startAction = useCallback(
-    (
-      actionId: SloptexActionId,
-      options?: Record<string, any>,
-      initialOverride?: string
-    ) => {
-      if (checkMissingApiKey()) {
-        return
-      }
-      const config = SLOPTEX_ACTIONS[actionId]
-      const selected = getPrimarySelection(view)
-      if (config.requiresSelection && !selected && !initialOverride?.trim()) {
-        setError(t('sloptex_select_text'))
-        setActiveAction(null)
-        return
-      }
-      const initialText =
-        initialOverride ??
-        (config.requiresSelection && selected ? selected.text : '')
-      setActionOptions(options || null)
-      setPromptText(initialText)
-      setActiveAction(actionId)
-      setResult(null)
-      setError(null)
-    },
-    [checkMissingApiKey, t, view]
-  )
-
-  const handleRun = useCallback(async () => {
-    if (!activeAction) return
-    if (checkMissingApiKey()) return
-    const config = SLOPTEX_ACTIONS[activeAction]
-    if (config.requiresSelection) {
-      const selected = getPrimarySelection(view)
-      if (!selected) {
-        setError(t('sloptex_select_text'))
-        return
-      }
-    }
-    setIsRunning(true)
-    setError(null)
-    try {
-      const payload = {
-        text: promptText,
-        options: actionOptions || undefined,
-      }
-      const output = await sloptex.generate(activeAction, payload)
-      setResult(output)
-      if (config.target === 'replace') {
-        replaceSelection(view, output, false)
-      } else if (config.target === 'insert') {
-        replaceSelection(view, `\n${output}\n`, true)
-      }
-    } catch (err: any) {
-      setError(err?.message || t('sloptex_action_failed'))
-    } finally {
-      setIsRunning(false)
-    }
-  }, [
-    activeAction,
-    actionOptions,
-    promptText,
-    checkMissingApiKey,
-    sloptex,
-    t,
-    view,
-  ])
-
   const actionSections = useMemo(
     () =>
       SLOPTEX_SECTIONS.map(section =>
@@ -132,35 +56,48 @@ export const SloptexActionBar = memo(function SloptexActionBar({
   )
 
   const handleInlineAction = useCallback(
-    async (actionId: SloptexActionId) => {
+    async (
+      actionId: SloptexActionId,
+      options?: Record<string, any>,
+      textOverride?: string
+    ) => {
       if (checkMissingApiKey()) {
         return
       }
       const config = SLOPTEX_ACTIONS[actionId]
-      if (!config.requiresSelection) {
-        startAction(actionId)
-        return
-      }
       const selection = getPrimarySelection(view)
-      if (!selection) {
+      
+      // For actions that require selection, we need selected text
+      if (config.requiresSelection && !selection && !textOverride?.trim()) {
         setError(t('sloptex_select_text'))
         return
       }
+      
+      // For actions that don't require selection, use cursor position or selected text
+      const text = textOverride || (selection ? selection.text : '')
+      const from = selection?.from ?? view.state.selection.main.head
+      const to = selection?.to ?? view.state.selection.main.head
+      
       const inlineId = Date.now()
       setInlineEdit({
         id: inlineId,
         actionId,
-        from: selection.from,
-        to: selection.to,
-        original: selection.text,
+        from,
+        to,
+        original: text || '',
         status: 'loading',
       })
+      
       try {
         const payload = {
-          text: selection.text,
+          text: text || '',
+          options: options || undefined,
         }
         const output = await sloptex.generate(actionId, payload)
-        const diff = diffLines(selection.text, output)
+        
+        // For insert actions, show diff with empty original
+        const originalForDiff = config.target === 'insert' ? '' : text
+        const diff = diffLines(originalForDiff, output)
         setInlineEdit(prev =>
           prev && prev.id === inlineId
             ? { ...prev, status: 'ready', result: output, diff }
@@ -178,22 +115,30 @@ export const SloptexActionBar = memo(function SloptexActionBar({
         )
       }
     },
-    [checkMissingApiKey, sloptex, t, view, startAction]
+    [checkMissingApiKey, sloptex, t, view]
   )
 
   const handleInlineAccept = useCallback(() => {
     if (!inlineEdit || inlineEdit.status !== 'ready' || !inlineEdit.result) {
       return
     }
+    const config = SLOPTEX_ACTIONS[inlineEdit.actionId]
+    const insertText = config.target === 'insert' 
+      ? `\n${inlineEdit.result}\n`
+      : inlineEdit.result
+    const insertAt = config.target === 'insert' 
+      ? inlineEdit.from
+      : inlineEdit.from
+    
     view.dispatch({
       changes: {
-        from: inlineEdit.from,
-        to: inlineEdit.to,
-        insert: inlineEdit.result,
+        from: config.target === 'insert' ? insertAt : inlineEdit.from,
+        to: config.target === 'insert' ? insertAt : inlineEdit.to,
+        insert: insertText,
       },
       selection: {
-        anchor: inlineEdit.from,
-        head: inlineEdit.from + inlineEdit.result.length,
+        anchor: insertAt + insertText.length,
+        head: insertAt + insertText.length,
       },
     })
     setInlineEdit(null)
@@ -246,12 +191,8 @@ export const SloptexActionBar = memo(function SloptexActionBar({
                     >
                       <OLButton
                         size="sm"
-                        variant={
-                          activeAction === actionId
-                            ? 'primary'
-                            : 'outline-secondary'
-                        }
-                        onClick={() => startAction(actionId)}
+                        variant="outline-secondary"
+                        onClick={() => handleInlineAction(actionId)}
                         aria-label={action.label}
                         className="sloptex-icon-button"
                         leadingIcon={SLOPTEX_ACTIONS[actionId].icon}
@@ -271,31 +212,12 @@ export const SloptexActionBar = memo(function SloptexActionBar({
           </div>
         </div>
       )}
-      <SloptexPromptPanel
-        isOpen={Boolean(isOpen && activeAction)}
-        actionId={activeAction}
-        status={sloptex.status}
-        prompt={promptText}
-        onPromptChange={setPromptText}
-        onClose={() => {
-          setActiveAction(null)
-          setPromptText('')
-          setResult(null)
-          setError(null)
-        }}
-        onRun={handleRun}
-        result={result}
-        loading={isRunning}
-        error={error}
-        actionOptions={actionOptions}
-        setActionOptions={setActionOptions}
-      />
       <SloptexSelectionOverlay
         visible={isOpen}
         view={view}
         labels={labels}
         inlineEdit={inlineEdit}
-        onPromptAction={(actionId, text) => startAction(actionId, undefined, text)}
+        onPromptAction={(actionId, text) => handleInlineAction(actionId, undefined, text)}
         onInlineAction={handleInlineAction}
         onInlineAccept={handleInlineAccept}
         onInlineReject={handleInlineReject}

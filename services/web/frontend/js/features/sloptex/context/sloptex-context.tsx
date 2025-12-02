@@ -23,7 +23,7 @@ type SloptexStatus = {
 const DISABLED_STATUS: SloptexStatus = {
   enabled: false,
   hasApiKey: false,
-  defaultModel: 'gemini-2.5-flash',
+  defaultModel: 'gemini-2.5-flash-lite',
 }
 
 type SloptexContextValue = {

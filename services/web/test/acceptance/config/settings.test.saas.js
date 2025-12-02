@@ -88,7 +88,7 @@ const overrides = {
 
   sloptex: {
     enabled: true,
-    defaultModel: 'gemini-2.5-flash',
+    defaultModel: 'gemini-2.5-flash-lite',
     accessTokenEncryptorOptions: {
       cipherLabel: '2023.1-v3',
       cipherPasswords: {

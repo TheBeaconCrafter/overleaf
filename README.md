@@ -35,17 +35,19 @@ Beaconleaf is a fork of Overleaf Community Edition with the following enhancemen
 - **Administrator Tools**: Enhanced administrative features for better server management
 - **Symbol Palette**: Professional symbol palette similar to Overleaf Pro, providing quick access to mathematical and special characters
 - **New editor design**: Enables Overleaf's new editor design on community edition (with a toggle of course)
+- **Sloptex**: AI companion based on Google Gemini, each user provides their own API key
 
 ## Planned Features
 
 The following features are planned for future releases:
 
 - [ ] Enhanced admin tools (see online users)
+- [ ] Track changes
 - [ ] Sandboxed compiles
 - [ ] Autocomplete of reference keys
 - [ ] Template Gallery
 - [ ] Git integration
-- [ ] AI Features
+- [x] AI Features
 - [ ] Google Drive Sync
 
 ## Known Bugs

@@ -888,7 +888,7 @@ module.exports = {
 
   sloptex: {
     enabled: process.env.SLOPTEX_ENABLED !== 'false',
-    defaultModel: process.env.SLOPTEX_DEFAULT_MODEL || 'gemini-2.5-flash',
+    defaultModel: process.env.SLOPTEX_DEFAULT_MODEL || 'gemini-2.5-flash-lite',
     accessTokenEncryptorOptions: sloptexAccessTokenEncryptorOptions,
   },
 
