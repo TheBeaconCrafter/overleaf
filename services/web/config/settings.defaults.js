@@ -1063,7 +1063,7 @@ module.exports = {
     'server-ce-scripts',
     'user-activate',
     'admin-panel',
-    'sandboxed-compiles',
+    // 'sandboxed-compiles', // disabled in this fork – no support for sandboxed compiles
     'symbol-palette',
   ],
   viewIncludes: {},
