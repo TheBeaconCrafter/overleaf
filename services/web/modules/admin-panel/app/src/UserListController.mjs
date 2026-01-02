@@ -17,6 +17,7 @@ import { DeletedUser } from '../../../../app/src/models/DeletedUser.mjs'
 import { DeletedProject } from '../../../../app/src/models/DeletedProject.mjs'
 import { AUTH_TYPE } from './auth-types.mjs'
 import HttpErrorHandler from '../../../../app/src/Features/Errors/HttpErrorHandler.mjs'
+import { db } from '../../../../app/src/infrastructure/mongodb.mjs'
 
 import Path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -170,7 +171,7 @@ async function _getUsers(
 
   const allUsers = [...activeUsers, ...deletedUsers]
 
-  const formattedUsers = _formatUsers(allUsers)
+  const formattedUsers = await _formatUsers(allUsers)
 
   const filteredUsers = _applyFilters(formattedUsers, filters)
   const users = _sortAndPaginate(filteredUsers, sort, page)
@@ -181,15 +182,28 @@ async function _getUsers(
   }
 }
 
-function _formatUsers(users) {
+async function _formatUsers(users) {
   const formattedUsers = []
   const yearAgo = new Date()
   yearAgo.setFullYear(yearAgo.getFullYear() - 1)
 
   for (const user of users) {
-    formattedUsers.push(
-      _formatUserInfo(user, yearAgo)
-    )
+    const formattedUser = _formatUserInfo(user, yearAgo)
+    // Calculate storage for non-deleted users
+    if (!formattedUser.deleted) {
+      try {
+        formattedUser.storageUsed = await _getUserStorageUsed(user)
+      } catch (error) {
+        logger.warn(
+          { error, userId: user._id?.toString() || user.deletedId },
+          'Error calculating user storage'
+        )
+        formattedUser.storageUsed = 0
+      }
+    } else {
+      formattedUser.storageUsed = 0
+    }
+    formattedUsers.push(formattedUser)
   }
 
   return formattedUsers
@@ -278,6 +292,76 @@ function _hasActiveFilter(filters) {
     filters.ldap ||
     filters.search?.length
   )
+}
+
+/**
+ * Calculate total storage used by a user's projects
+ * @param {Object} user - User object with _id
+ * @returns {Promise<number>} - Storage in bytes
+ */
+async function _getUserStorageUsed(user) {
+  try {
+    const userId = user._id || user.deletedId
+    if (!userId) {
+      return 0
+    }
+
+    // Convert to ObjectId if it's a string
+    const ObjectId = (await import('mongodb')).ObjectId
+    const userObjectId = typeof userId === 'string' ? new ObjectId(userId) : userId
+
+    // Get all projects owned by this user
+    const projects = await db.projects
+      .find(
+        { owner_ref: userObjectId },
+        { projection: { _id: 1 } }
+      )
+      .toArray()
+
+    if (!projects || projects.length === 0) {
+      return 0
+    }
+
+    // Calculate total size of all docs in user's projects
+    let totalSize = 0
+
+    for (const project of projects) {
+      try {
+        // Get all docs for this project
+        const docs = await db.docs
+          .find(
+            { project_id: project._id },
+            { projection: { lines: 1 } }
+          )
+          .toArray()
+
+        // Calculate size from doc lines
+        for (const doc of docs) {
+          if (doc.lines && Array.isArray(doc.lines)) {
+            // Approximate size: sum of line lengths + newlines
+            const docSize = doc.lines.reduce((sum, line) => {
+              return sum + (line ? line.length : 0) + 1 // +1 for newline
+            }, 0)
+            totalSize += docSize
+          }
+        }
+      } catch (projectError) {
+        logger.debug(
+          { error: projectError, projectId: project._id },
+          'Error calculating storage for project'
+        )
+        // Continue to next project
+      }
+    }
+
+    return totalSize
+  } catch (error) {
+    logger.warn(
+      { error, userId: user._id?.toString() || user.deletedId },
+      'Error calculating user storage'
+    )
+    return 0
+  }
 }
 
 async function deleteNormalUser(req, res, next) {

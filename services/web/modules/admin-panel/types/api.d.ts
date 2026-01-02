@@ -45,6 +45,7 @@ export type UserApi = {
   deleted?: boolean
   deletedAt?: Date
   deletedId?: string
+  storageUsed?: number
 }
 
 export type User = MergeAndOverride<

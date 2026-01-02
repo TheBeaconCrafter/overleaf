@@ -4,6 +4,7 @@ import EmailCell from './cells/email-cell'
 import LastActiveCell from './cells/last-active-cell'
 import SignUpDateCell from './cells/sign-up-date-cell'
 import DeletedAtCell from './cells/deleted-at-cell'
+import StorageCell from './cells/storage-cell'
 import ActionsCell from './cells/actions-cell'
 import ActionsDropdown from '../dropdown/actions-dropdown'
 import { User } from '../../../../../types/api'
@@ -51,6 +52,11 @@ function UserListTableRow({ user, selected, filter }: UserListTableRowProps) {
       <td className="dash-cell-date-active d-none d-md-table-cell">
         <LastActiveCell user={user} />
       </td>
+      {filter !== 'deleted' && (
+        <td className="dash-cell-storage d-none d-md-table-cell">
+          <StorageCell user={user} />
+        </td>
+      )}
       <td className="dash-cell-actions">
         <div className="d-none d-lg-block">
           { !isSelf && <ActionsCell user={user} />}

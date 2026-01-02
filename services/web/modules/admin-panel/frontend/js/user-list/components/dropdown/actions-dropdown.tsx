@@ -22,8 +22,8 @@ function ActionsDropdown({ user }: ActionDropdownProps) {
 
 
   const flagActions = [
-    { action: 'set_admin', icon: 'add_moderator', unfilled: true },
-    { action: 'unset_admin', icon: 'remove_moderator', unfilled: true },
+    { action: 'set_admin', icon: 'star', unfilled: true },
+    { action: 'unset_admin', icon: 'close', unfilled: true },
     { action: 'suspend', icon: 'pause', unfilled: false },
     { action: 'resume', icon: 'resume', unfilled: false },
   ]

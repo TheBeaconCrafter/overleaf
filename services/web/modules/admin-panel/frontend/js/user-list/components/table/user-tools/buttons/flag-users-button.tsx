@@ -7,6 +7,7 @@ import { useUserListContext } from '../../../../context/user-list-context'
 import { User } from '../../../../../../../types/api'
 import FlagUserModal from '../../../modals/flag-user-modal'
 import { performFlagUser, AfterActions } from '../../../../util/user-actions'
+import type { AvailableUnfilledIcon } from '@/shared/components/material-icon'
 
 function FlagUsersButton({ action }: { action: string }) {
   const { selectedUsers, toggleSelectedUser, updateUserViewData } =
@@ -32,15 +33,15 @@ function FlagUsersButton({ action }: { action: string }) {
     await performFlagUser(user, afterActions, options)
   }
 
-  let icon
-  let unfilled
+  let icon: string | AvailableUnfilledIcon
+  let unfilled: boolean
   switch (action) {
     case 'set_admin':
-      icon = 'add_moderator'
+      icon = 'star'
       unfilled = true
       break
     case 'unset_admin':
-      icon = 'remove_moderator'
+      icon = 'close'
       unfilled = true
       break
     case 'suspend':

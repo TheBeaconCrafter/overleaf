@@ -60,9 +60,9 @@ function ThinFooter({
             {showPoweredBy ? (
               <>
                 <li>
-                  {/* year of Server Pro release, static */}© 2025{' '}
+                  {/* year of Server Pro release, static */}© 2026{' '}
                   <a href="https://github.com/TheBeaconCrafter/overleaf">
-                    Powered by Beaconleaf
+                    Powered by Beaconleaf (2026.1.1)
                   </a>
                 </li>
                 {showLanguagePicker || hasCustomLeftNav ? <Separator /> : null}

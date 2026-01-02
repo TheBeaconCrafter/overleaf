@@ -7,6 +7,7 @@ import { useUserListContext } from '../../../../context/user-list-context'
 import { User } from '../../../../../../../types/api'
 import FlagUserModal from '../../../modals/flag-user-modal'
 import { performFlagUser, AfterActions } from '../../../../util/user-actions'
+import type { AvailableUnfilledIcon } from '@/shared/components/material-icon'
 
 type FlagUserButtonProps = {
   user: User
@@ -59,14 +60,15 @@ function FlagUserButton({ user, action, children }: FlagUserButtonProps) {
 const FlagUserButtonTooltip = memo(function FlagUserButtonTooltip({
   user, flag
 }: Pick<FlagUserButtonProps, 'user' | 'flag'>) {
+  const { t } = useTranslation()
 
   let action
-  let icon
-  let unfilled
+  let icon: string | AvailableUnfilledIcon
+  let unfilled: boolean
   switch (flag) {
     case 'isAdmin':
       action = user.isAdmin ? 'unset_admin' : 'set_admin'
-      icon = user.isAdmin ? 'remove_moderator' : 'add_moderator'
+      icon = user.isAdmin ? 'close' : 'star'
       unfilled = true
       break
     case 'suspended':
@@ -78,27 +80,34 @@ const FlagUserButtonTooltip = memo(function FlagUserButtonTooltip({
       return null
   }
 
+  // Get translation text to ensure it's available
+  const text = t(action) || action
+
   return (
     <FlagUserButton user={user} action={action}>
-      {(text, handleOpenModal) => (
-        <OLTooltip
-          key={`tooltip-${action}-user-${user.id}`}
-          id={`${action}-user-${user.id}`}
-          description={text}
-          overlayProps={{ placement: 'top', trigger: ['hover', 'focus'] }}
-        >
-          <span>
-            <OLIconButton
-              onClick={handleOpenModal}
-              variant="link"
-              accessibilityLabel={text}
-              className="action-btn"
-              icon={icon}
-              unfilled={unfilled}
-            />
-          </span>
-        </OLTooltip>
-      )}
+      {(buttonText, handleOpenModal) => {
+        // Use the text from FlagUserButton, but fallback to our translation if needed
+        const displayText = buttonText || text
+        return (
+          <OLTooltip
+            key={`tooltip-${action}-user-${user.id}`}
+            id={`${action}-user-${user.id}`}
+            description={displayText}
+            overlayProps={{ placement: 'top', trigger: ['hover', 'focus'] }}
+          >
+            <span>
+              <OLIconButton
+                onClick={handleOpenModal}
+                variant="link"
+                accessibilityLabel={displayText}
+                className="action-btn"
+                icon={icon}
+                unfilled={unfilled}
+              />
+            </span>
+          </OLTooltip>
+        )
+      }}
     </FlagUserButton>
   )
 })

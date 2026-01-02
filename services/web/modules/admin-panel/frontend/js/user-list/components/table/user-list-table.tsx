@@ -172,6 +172,14 @@ function UserListTable() {
               onClick={() => handleSort('lastActive')}
             />
           </th>
+          {filter !== 'deleted' && (
+            <th
+              className="dash-cell-storage d-none d-md-table-cell"
+              aria-label="Storage Used"
+            >
+              Storage Used
+            </th>
+          )}
           <th className="dash-cell-actions" aria-label={t('actions')}>
             {t('actions')}
           </th>
@@ -189,7 +197,7 @@ function UserListTable() {
           ))
         ) : (
           <tr className="no-users">
-            <td className="text-center" colSpan={5}>
+            <td className="text-center" colSpan={filter !== 'deleted' ? 7 : 6}>
               {t('no_users')}
             </td>
           </tr>

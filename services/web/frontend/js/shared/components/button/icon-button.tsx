@@ -36,7 +36,11 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         {...props}
         ref={ref}
       >
-        <MaterialIcon className={materialIconClassName} type={icon} />
+        <MaterialIcon 
+          className={materialIconClassName} 
+          type={icon} 
+          unfilled={unfilled}
+        />
       </Button>
     )
   }

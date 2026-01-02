@@ -281,6 +281,17 @@ ul.user-list-filters {
     }
   }
 
+  .action-btn {
+    .material-symbols.unfilled {
+      font-family: 'Material Symbols Rounded Unfilled Partial' !important;
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 20 !important;
+    }
+  }
+
   .dash-cell-name {
     hyphens: auto;
     width: 30%;

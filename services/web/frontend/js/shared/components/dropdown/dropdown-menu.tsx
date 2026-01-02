@@ -44,6 +44,7 @@ function DropdownItem(
         <MaterialIcon
           className={classnames('dropdown-item-leading-icon', {unfilled})}
           type={leadingIcon}
+          unfilled={unfilled}
         />
       )
     } else {
@@ -64,6 +65,7 @@ function DropdownItem(
         <MaterialIcon
           className={classnames('dropdown-item-trailing-icon', {unfilled})}
           type={trailingIconType}
+          unfilled={unfilled}
         />
       )
     } else {
