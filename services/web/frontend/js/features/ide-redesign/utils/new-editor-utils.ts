@@ -92,3 +92,10 @@ export const useIsNewEditorEnabled = () => {
   const enabled = userSettings.enableNewEditor
   return hasAccess && enabled
 }
+
+export const useIsNewToNewEditor = () => {
+  const { userSettings } = useUserSettingsContext()
+  const newEditor = useIsNewEditorEnabled()
+
+  return newEditor && !userSettings.enableNewEditorLegacy
+}

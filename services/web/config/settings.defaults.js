@@ -1054,6 +1054,7 @@ module.exports = {
     errorLogsComponents: [],
     referenceIndices: [],
     railEntries: [],
+    railPopovers: [],
   },
 
   moduleImportSequence: [

@@ -17,9 +17,10 @@ if (process.env.CI && process.env.MOCHA_ROOT_SUITE_NAME) {
 }
 module.exports = defineConfig({
   test: {
-    setupFiles: ['./test/unit/vitest_bootstrap.mjs'],
+    setupFiles: ['./test/unit/bootstrap.mjs'],
     globals: true,
     isolate: false,
+    passWithNoTests: true, // in case there are no tests from one project or other in a module
     projects: [
       {
         extends: true,
@@ -29,6 +30,9 @@ module.exports = defineConfig({
             'modules/*/test/unit/**/*.test.mjs',
             'test/unit/src/**/*.test.mjs',
           ],
+          sequence: {
+            groupOrder: 2,
+          },
           exclude: ['**/*.sequential.test.mjs'],
           fileParallelism: true,
         },
@@ -37,6 +41,9 @@ module.exports = defineConfig({
         extends: true,
         test: {
           name: 'Sequential',
+          sequence: {
+            groupOrder: 1,
+          },
           include: [
             'modules/*/test/unit/**/*.sequential.test.mjs',
             'test/unit/src/**/*.sequential.test.mjs',
