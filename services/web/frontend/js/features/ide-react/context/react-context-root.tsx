@@ -32,6 +32,7 @@ import { CommandRegistryProvider } from './command-registry-context'
 import { EditorDarkModeProvider } from '@/features/ide-redesign/context/editor-dark-mode-context'
 import { NewEditorTourProvider } from '@/features/ide-redesign/contexts/new-editor-tour-context'
 import { EditorSelectionProvider } from '@/shared/context/editor-selection-context'
+import { AnnouncementProvider } from '@/shared/context/announcement-context'
 import importOverleafModules from '../../../../macros/import-overleaf-module.macro'
 
 const rootContextProviders = importOverleafModules('rootContextProviders') as {
@@ -78,6 +79,7 @@ export const ReactContextRoot: FC<
     NewEditorTourProvider,
     EditorSelectionProvider,
     EditorDarkModeProvider,
+    AnnouncementProvider,
     ...providers,
   }
 
@@ -95,8 +97,9 @@ export const ReactContextRoot: FC<
 
   return (
     <Providers.SplitTestProvider>
-      <Providers.ModalsContextProvider>
-        <Providers.ConnectionProvider>
+      <Providers.AnnouncementProvider>
+        <Providers.ModalsContextProvider>
+          <Providers.ConnectionProvider>
           <Providers.ProjectProvider>
             <Providers.UserSettingsProvider>
               <Providers.IdeReactProvider>
@@ -162,6 +165,7 @@ export const ReactContextRoot: FC<
           </Providers.ProjectProvider>
         </Providers.ConnectionProvider>
       </Providers.ModalsContextProvider>
+      </Providers.AnnouncementProvider>
     </Providers.SplitTestProvider>
   )
 }

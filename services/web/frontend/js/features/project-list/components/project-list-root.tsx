@@ -21,6 +21,8 @@ import { DsNavStyleProvider } from '@/features/project-list/components/use-is-ds
 import CookieBanner from '@/shared/components/cookie-banner'
 import useThemedPage from '@/shared/hooks/use-themed-page'
 import { UserSettingsProvider } from '@/shared/context/user-settings-context'
+import { AnnouncementProvider, useAnnouncements } from '@/shared/context/announcement-context'
+import AnnouncementModal from '@/shared/components/announcement-modal'
 
 function ProjectListRoot() {
   const { isReady } = useWaitForI18n()
@@ -38,7 +40,9 @@ export function ProjectListRootInner() {
       <ColorPickerProvider>
         <SplitTestProvider>
           <UserSettingsProvider>
-            <ProjectListPageContent />
+            <AnnouncementProvider>
+              <ProjectListPageContent />
+            </AnnouncementProvider>
           </UserSettingsProvider>
         </SplitTestProvider>
       </ColorPickerProvider>
@@ -77,6 +81,7 @@ function ProjectListPageContent() {
   useThemedPage('themed-project-dashboard')
   const { totalProjectsCount, isLoading, loadProgress } =
     useProjectListContext()
+  const { currentAnnouncement, showModal, setShowModal, handleDismiss } = useAnnouncements()
 
   useEffect(() => {
     eventTracking.sendMB('loads_v2_dash', {})
@@ -99,13 +104,27 @@ function ProjectListPageContent() {
           <WelcomePageContent />
         </DefaultPageContentWrapper>
         <CookieBanner />
+        {showModal && currentAnnouncement && (
+          <AnnouncementModal
+            announcement={currentAnnouncement}
+            onDismiss={handleDismiss}
+          />
+        )}
       </>
     )
   }
   return (
-    <DsNavStyleProvider>
-      <ProjectListDsNav />
-    </DsNavStyleProvider>
+    <>
+      <DsNavStyleProvider>
+        <ProjectListDsNav />
+      </DsNavStyleProvider>
+      {showModal && currentAnnouncement && (
+        <AnnouncementModal
+          announcement={currentAnnouncement}
+          onDismiss={handleDismiss}
+        />
+      )}
+    </>
   )
 }
 

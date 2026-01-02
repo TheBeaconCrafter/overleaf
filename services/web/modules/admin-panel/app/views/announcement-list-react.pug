@@ -1,0 +1,13 @@
+extends ../../../../app/views/layout-react
+
+block entrypointVar
+	- entrypoint = 'modules/admin-panel/pages/announcement-list'
+
+block vars
+	- const suppressNavContentLinks = true
+	- const suppressPugCookieBanner = true
+
+block content
+	main.content.content-alt(aria-labelledby="main-content")
+		#announcement-list-root
+

@@ -3,6 +3,7 @@ import getMeta from '@/utils/meta'
 import { DefaultNavbarRoot } from '@/shared/components/navbar/default-navbar'
 import Footer from '@/shared/components/footer/footer'
 import { SplitTestProvider } from '@/shared/context/split-test-context'
+import { AnnouncementProvider } from '@/shared/context/announcement-context'
 
 const navbarElement = document.getElementById('navbar-container')
 if (navbarElement) {
@@ -10,7 +11,9 @@ if (navbarElement) {
   const root = createRoot(navbarElement)
   root.render(
     <SplitTestProvider>
-      <DefaultNavbarRoot {...navbarProps} />
+      <AnnouncementProvider>
+        <DefaultNavbarRoot {...navbarProps} />
+      </AnnouncementProvider>
     </SplitTestProvider>
   )
 }

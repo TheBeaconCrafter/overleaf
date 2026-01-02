@@ -6,6 +6,7 @@ import ShareProjectButton from './share-project-button'
 import ChangeLayoutButton from './change-layout-button'
 import ShowHistoryButton from './show-history-button'
 import DarkModeToggleButton from './dark-mode-toggle-button'
+import AnnouncementWarningIcon from '@/shared/components/announcement-warning-icon'
 import { useLayoutContext } from '@/shared/context/layout-context'
 import BackToEditorButton from '@/features/editor-navigation-toolbar/components/back-to-editor-button'
 import { useCallback } from 'react'
@@ -60,6 +61,9 @@ export const Toolbar = () => {
         {shouldDisplaySubmitButton && cobranding && (
           <SubmitProjectButton cobranding={cobranding} />
         )}
+        <div className="ide-redesign-toolbar-button-container">
+          <AnnouncementWarningIcon />
+        </div>
         <DarkModeToggleButton />
         <ShareProjectButton />
         {getMeta('ol-showUpgradePrompt') && <UpgradeButton />}

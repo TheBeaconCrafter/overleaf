@@ -20,6 +20,7 @@ import { OnlineUser } from '@/features/ide-react/context/online-users-context'
 import { Cobranding } from '../../../../../types/cobranding'
 import { canUseNewEditor } from '@/features/ide-redesign/utils/new-editor-utils'
 import DarkModeToggleButton from './dark-mode-toggle-button'
+import AnnouncementWarningIcon from '@/shared/components/announcement-warning-icon'
 import { Doc } from '@ol-types/doc'
 
 const [publishModalModules] = importOverleafModules('publishModal') as {
@@ -145,6 +146,10 @@ const ToolbarHeader = React.memo(function ToolbarHeader({
             )}
 
             <LayoutDropdownButton />
+
+            <div className="toolbar-item">
+              <AnnouncementWarningIcon />
+            </div>
 
             <DarkModeToggleButton />
 

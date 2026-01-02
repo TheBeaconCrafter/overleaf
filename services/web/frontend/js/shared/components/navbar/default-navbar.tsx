@@ -16,6 +16,7 @@ import { X } from '@phosphor-icons/react'
 import overleafWhiteLogo from '@/shared/svgs/overleaf-white.svg'
 import overleafBlackLogo from '@/shared/svgs/overleaf-black.svg'
 import type { CSSPropertiesWithVariables } from '../../../../../types/css-properties-with-variables'
+import AnnouncementWarningIcon from '@/shared/components/announcement-warning-icon'
 
 function DefaultNavbar(
   props: DefaultNavbarMetadata & { overleafLogo?: string }
@@ -91,6 +92,8 @@ function DefaultNavbar(
           </div>
           {suppressNavbarRight ? null : (
             <>
+              {/* Announcement warning icon */}
+              <AnnouncementWarningIcon />
               {/* Theme toggle button */}
               <button
                 id="theme-toggle-btn"
