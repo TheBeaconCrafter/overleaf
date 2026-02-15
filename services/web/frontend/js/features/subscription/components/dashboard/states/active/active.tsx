@@ -85,8 +85,8 @@ export function ActiveSubscription({
 
   const hasPendingPause = Boolean(
     subscription.payment.state === 'active' &&
-      subscription.payment.remainingPauseCycles &&
-      subscription.payment.remainingPauseCycles > 0
+    subscription.payment.remainingPauseCycles &&
+    subscription.payment.remainingPauseCycles > 0
   )
 
   const isLegacyPlan =
@@ -164,13 +164,25 @@ export function ActiveSubscription({
             </a>
           </>
         ) : (
-          <a
-            href={subscription.payment.accountManagementLink}
-            rel="noreferrer noopener"
-            className="me-2"
-          >
-            {t('view_payment_portal')}
-          </a>
+          <>
+            <a
+              href={subscription.payment.accountManagementLink}
+              rel="noreferrer noopener"
+              className="me-2"
+            >
+              {t('view_payment_portal')}
+            </a>
+            {subscription.payment.isMigratedFromRecurly && (
+              <p>
+                <i style={{ fontSize: 'var(--font-size-01)' }}>
+                  <Trans
+                    i18nKey="view_payment_portal_disclaimer"
+                    components={[<a href="/contact" />]} // eslint-disable-line react/jsx-key, jsx-a11y/anchor-has-content
+                  />
+                </i>
+              </p>
+            )}
+          </>
         )}
       </div>
       <div className="mt-3">
@@ -186,10 +198,6 @@ export function ActiveSubscription({
       <hr />
       <h2 className="h3 fw-bold">{t('plan')}</h2>
       <h3 className="h5 mt-0 mb-1 fw-bold">{planName}</h3>
-      {subscription.pendingPlan &&
-        subscription.pendingPlan.name !== subscription.plan.name && (
-          <p className="mb-1">{t('want_change_to_apply_before_plan_end')}</p>
-        )}
       {isInFreeTrial(subscription.payment.trialEndsAt) &&
         subscription.payment.trialEndsAtFormatted && (
           <TrialEnding
@@ -262,6 +270,12 @@ export function ActiveSubscription({
               })}
         </p>
       )}
+
+      {subscription.pendingPlan &&
+        subscription.pendingPlan.name !== subscription.plan.name && (
+          <p className="mb-1">{t('want_change_to_apply_before_plan_end')}</p>
+        )}
+
       {!recurlyLoadError && (
         <PlanActions
           subscription={subscription}
@@ -366,7 +380,7 @@ function FlexibleGroupLicensingActions({
 }) {
   const { t } = useTranslation()
 
-  if (subscription.pendingPlan || subscription.payment.hasPastDueInvoice) {
+  if (subscription.payment.hasPastDueInvoice) {
     return null
   }
 

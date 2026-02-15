@@ -29,16 +29,14 @@ export const EditorContext = createContext<
       isProjectOwner: boolean
       isRestrictedTokenMember?: boolean
       isPendingEditor: boolean
-      deactivateTutorial: (tutorial: string) => void
-      inactiveTutorials: string[]
-      currentPopup: string | null
-      setCurrentPopup: Dispatch<SetStateAction<string | null>>
       hasPremiumSuggestion: boolean
       setHasPremiumSuggestion: (value: boolean) => void
       setPremiumSuggestionResetDate: (date: Date) => void
       premiumSuggestionResetDate: Date
       writefullInstance: WritefullAPI | null
       setWritefullInstance: (instance: WritefullAPI) => void
+      showUpgradeModal: boolean
+      setShowUpgradeModal: Dispatch<SetStateAction<boolean>>
     }
   | undefined
 >(undefined)
@@ -75,16 +73,11 @@ export const EditorProvider: FC<React.PropsWithChildren> = ({ children }) => {
     )
   }, [])
 
-  const [inactiveTutorials, setInactiveTutorials] = useState(
-    () => getMeta('ol-inactiveTutorials') || []
-  )
-
-  const [currentPopup, setCurrentPopup] = useState<string | null>(null)
   const [hasPremiumSuggestion, setHasPremiumSuggestion] = useState<boolean>(
     () => {
       return Boolean(
         featureUsage?.aiErrorAssistant &&
-          featureUsage?.aiErrorAssistant.remainingUsage > 0
+        featureUsage?.aiErrorAssistant.remainingUsage > 0
       )
     }
   )
@@ -94,6 +87,8 @@ export const EditorProvider: FC<React.PropsWithChildren> = ({ children }) => {
         ? new Date(featureUsage.aiErrorAssistant.resetDate)
         : new Date()
     })
+
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   const isPendingEditor = useMemo(
     () =>
@@ -105,13 +100,6 @@ export const EditorProvider: FC<React.PropsWithChildren> = ({ children }) => {
         )
       ),
     [members, userId]
-  )
-
-  const deactivateTutorial = useCallback(
-    (tutorialKey: string) => {
-      setInactiveTutorials([...inactiveTutorials, tutorialKey])
-    },
-    [inactiveTutorials]
   )
 
   const renameProject = useCallback(
@@ -176,16 +164,14 @@ export const EditorProvider: FC<React.PropsWithChildren> = ({ children }) => {
       isRestrictedTokenMember: getMeta('ol-isRestrictedTokenMember'),
       isPendingEditor,
       insertSymbol,
-      inactiveTutorials,
-      deactivateTutorial,
-      currentPopup,
-      setCurrentPopup,
       hasPremiumSuggestion,
       setHasPremiumSuggestion,
       premiumSuggestionResetDate,
       setPremiumSuggestionResetDate,
       writefullInstance,
       setWritefullInstance,
+      showUpgradeModal,
+      setShowUpgradeModal,
     }),
     [
       cobranding,
@@ -195,16 +181,14 @@ export const EditorProvider: FC<React.PropsWithChildren> = ({ children }) => {
       renameProject,
       isPendingEditor,
       insertSymbol,
-      inactiveTutorials,
-      deactivateTutorial,
-      currentPopup,
-      setCurrentPopup,
       hasPremiumSuggestion,
       setHasPremiumSuggestion,
       premiumSuggestionResetDate,
       setPremiumSuggestionResetDate,
       writefullInstance,
       setWritefullInstance,
+      showUpgradeModal,
+      setShowUpgradeModal,
     ]
   )
 

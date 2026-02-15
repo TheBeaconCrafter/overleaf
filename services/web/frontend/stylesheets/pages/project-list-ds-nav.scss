@@ -2,11 +2,25 @@
   --ds-nav-active-bg: var(--bg-accent-03);
   --ds-nav-active-color: var(--green-60);
   --theme-toggle-selected-background: var(--green-20);
+  --ds-nav-content-bg-secondary: var(--bg-light-secondary);
+  --table-icon-bg-hover: 27 34 44;
+  --themed-dashboard-popover-bg: var(--bg-dark-primary);
+  --themed-dashboard-popover-color: var(--content-primary-dark);
+  --themed-dashboard-popover-link-color: var(--link-ui-dark);
+  --themed-dashboard-popover-link-hover-color: var(--link-ui-hover-dark);
+  --themed-dashboard-popover-link-visited-color: var(--link-ui-visited-dark);
 
   @include theme('default') {
     --ds-nav-active-bg: var(--green-70);
     --ds-nav-active-color: var(--green-10);
     --theme-toggle-selected-background: var(--green-70);
+    --ds-nav-content-bg-secondary: var(--bg-dark-secondary);
+    --table-icon-bg-hover: 255 255 255;
+    --themed-dashboard-popover-bg: var(--bg-light-primary);
+    --themed-dashboard-popover-color: var(--content-primary);
+    --themed-dashboard-popover-link-color: var(--link-ui);
+    --themed-dashboard-popover-link-hover-color: var(--link-ui-hover);
+    --themed-dashboard-popover-link-visited-color: var(--link-ui-visited);
   }
 }
 
@@ -19,7 +33,7 @@ body {
 .project-ds-nav-page {
   @include full-height-stacked-page;
 
-  color: var(--content-secondary);
+  color: var(--content-secondary-themed);
 
   // NOTE-AC: This code can be eliminated when we remove sidebar-navigation-ui-update
   --navbar-btn-padding-h: var(--spacing-06);
@@ -60,7 +74,7 @@ body {
       .nav-item-help::before {
         content: '';
         display: block;
-        border-top: 1px solid var(--border-divider);
+        border-top: 1px solid var(--border-divider-themed);
         margin: var(--spacing-07) var(--spacing-06);
       }
 
@@ -110,7 +124,7 @@ body {
         border-bottom: solid 1px transparent;
 
         &.show-shadow {
-          border-bottom-color: var(--border-divider);
+          border-bottom-color: var(--border-divider-themed);
         }
 
         > .dropdown-menu {
@@ -143,7 +157,7 @@ body {
         border-top: solid 1px transparent;
 
         &.show-shadow {
-          border-top-color: var(--border-divider);
+          border-top-color: var(--border-divider-themed);
         }
       }
 
@@ -152,8 +166,8 @@ body {
       }
 
       .survey-notification {
-        background-color: var(--bg-light-secondary);
-        color: var(--content-secondary);
+        background-color: var(--bg-secondary-themed);
+        color: var(--content-secondary-themed);
         box-shadow: none;
         border-radius: var(--border-radius-large);
         position: relative;
@@ -255,7 +269,7 @@ body {
 
     .project-dash-table {
       .btn-link {
-        color: var(--content-secondary);
+        color: var(--content-secondary-themed);
         height: var(--spacing-08);
         width: var(--spacing-08);
         border-radius: 100%;
@@ -264,12 +278,12 @@ body {
 
         &:hover,
         &:focus {
-          background-color: #d9d9d9 !important;
+          background-color: rgb(var(--table-icon-bg-hover) / 8%) !important;
         }
       }
 
       .dash-cell-name a {
-        color: var(--content-secondary) !important;
+        color: var(--content-primary-themed) !important;
       }
     }
 
@@ -280,7 +294,7 @@ body {
 
       > * {
         @include media-breakpoint-up(md) {
-          border-left: 1px solid var(--border-divider);
+          border-left: 1px solid var(--border-divider-themed);
         }
       }
 
@@ -288,17 +302,16 @@ body {
         flex-grow: 1;
         overflow-y: auto;
         position: relative;
-        background-color: var(--bg-light-secondary);
+        background-color: var(--ds-nav-content-bg-secondary);
 
         @include media-breakpoint-up(md) {
           border-top-left-radius: var(--border-radius-large);
-          border-top: 1px solid var(--border-divider);
+          border-top: 1px solid var(--border-divider-themed);
         }
       }
 
       .cookie-banner {
         position: static;
-        background-color: var(--bg-light-primary);
 
         // Remove the parts of the shadow that stick out of the sides
         clip-path: inset(-13px 0 0 0);
@@ -306,6 +319,11 @@ body {
         // Prevent the cookie banner being overlaid on top of the navigation
         z-index: auto;
       }
+    }
+
+    .btn-link {
+      --link-color: var(--link-web-themed);
+      --link-hover-color: var(--link-web-hover-themed);
     }
   }
 
@@ -409,5 +427,28 @@ body {
 
   input:checked + label {
     background-color: var(--theme-toggle-selected-background);
+  }
+}
+
+.themed-dashboard-intro-popover {
+  --bs-popover-bg: var(--themed-dashboard-popover-bg);
+  --bs-popover-header-bg: var(--themed-dashboard-popover-bg);
+  --bs-popover-body-color: var(--themed-dashboard-popover-color);
+  --bs-popover-header-color: var(--themed-dashboard-popover-color);
+
+  .btn-link {
+    color: var(--bs-popover-body-color);
+  }
+
+  a {
+    color: var(--themed-dashboard-popover-link-color);
+
+    &:visited {
+      color: var(--themed-dashboard-popover-link-hover-color);
+    }
+
+    &:hover {
+      color: var(--themed-dashboard-popover-link-visited-color);
+    }
   }
 }

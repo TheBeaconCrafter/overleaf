@@ -59,17 +59,6 @@ export const UserSchema = new Schema(
     },
     isAdmin: { type: Boolean, default: false },
     adminRoles: { type: Array },
-    staffAccess: {
-      publisherMetrics: { type: Boolean, default: false },
-      publisherManagement: { type: Boolean, default: false },
-      institutionMetrics: { type: Boolean, default: false },
-      institutionManagement: { type: Boolean, default: false },
-      groupMetrics: { type: Boolean, default: false },
-      groupManagement: { type: Boolean, default: false },
-      adminMetrics: { type: Boolean, default: false },
-      splitTestMetrics: { type: Boolean, default: false },
-      splitTestManagement: { type: Boolean, default: false },
-    },
     signUpDate: {
       type: Date,
       default() {
@@ -209,6 +198,10 @@ export const UserSchema = new Schema(
       isPremium: { type: Boolean, default: false },
       premiumSource: { type: String, default: null },
     },
+    aiFeatures: {
+      enabled: { type: Boolean, default: true },
+    },
+    // todo: assist clean-up: remove this once migration is finished
     aiErrorAssistant: {
       enabled: { type: Boolean, default: true },
     },

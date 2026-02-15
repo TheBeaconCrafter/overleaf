@@ -24,11 +24,11 @@ import LineHeightSetting from '../components/settings/appearance-settings/line-h
 import FontFamilySetting from '../components/settings/appearance-settings/font-family-setting'
 import { AvailableUnfilledIcon } from '@/shared/components/material-icon'
 import { EditorLeftMenuProvider } from '@/features/editor-left-menu/components/editor-left-menu-context'
-import NewEditorSetting from '../components/settings/editor-settings/new-editor-setting'
 import DarkModePdfSetting from '../components/settings/appearance-settings/dark-mode-pdf-setting'
 import { useProjectSettingsContext } from '@/features/editor-left-menu/context/project-settings-context'
 import { useFeatureFlag } from '@/shared/context/split-test-context'
 import ProjectNotificationsSetting from '../components/settings/editor-settings/project-notifications-setting'
+import getMeta from '@/utils/meta'
 
 const [referenceSearchSettingModule] = importOverleafModules(
   'referenceSearchSetting'
@@ -82,13 +82,14 @@ export const SettingsModalProvider: FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const { t } = useTranslation()
+  const { isOverleaf } = getMeta('ol-ExposedSettings')
   const { overallTheme } = useProjectSettingsContext()
 
   // TODO ide-redesign-cleanup: Rename this field and move it directly into this context
   const { leftMenuShown, setLeftMenuShown } = useLayoutContext()
 
-  const hasDarkModePdf = useFeatureFlag('pdf-dark-mode')
   const hasEmailNotifications = useFeatureFlag('email-notifications')
+
   const allSettingsTabs: SettingsEntry[] = useMemo(
     () => [
       {
@@ -211,7 +212,7 @@ export const SettingsModalProvider: FC<React.PropsWithChildren> = ({
               {
                 key: 'pdfDarkMode',
                 component: <DarkModePdfSetting />,
-                hidden: overallTheme === 'light-' || !hasDarkModePdf,
+                hidden: overallTheme === 'light-',
               },
               {
                 key: 'fontSize',
@@ -224,10 +225,6 @@ export const SettingsModalProvider: FC<React.PropsWithChildren> = ({
               {
                 key: 'lineHeight',
                 component: <LineHeightSetting />,
-              },
-              {
-                key: 'newEditor',
-                component: <NewEditorSetting />,
               },
             ],
           },
@@ -263,9 +260,10 @@ export const SettingsModalProvider: FC<React.PropsWithChildren> = ({
         title: t('subscription'),
         icon: 'account_balance',
         href: '/user/subscription',
+        hidden: !isOverleaf,
       },
     ],
-    [t, overallTheme, hasDarkModePdf, hasEmailNotifications]
+    [t, overallTheme, hasEmailNotifications, isOverleaf]
   )
 
   const settingsTabs = useMemo(

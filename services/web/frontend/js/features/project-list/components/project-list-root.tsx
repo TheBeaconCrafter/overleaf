@@ -23,6 +23,7 @@ import useThemedPage from '@/shared/hooks/use-themed-page'
 import { UserSettingsProvider } from '@/shared/context/user-settings-context'
 import { AnnouncementProvider, useAnnouncements } from '@/shared/context/announcement-context'
 import AnnouncementModal from '@/shared/components/announcement-modal'
+import { TutorialProvider } from '@/shared/context/tutorial-context'
 
 function ProjectListRoot() {
   const { isReady } = useWaitForI18n()
@@ -39,11 +40,13 @@ export function ProjectListRootInner() {
     <ProjectListProvider>
       <ColorPickerProvider>
         <SplitTestProvider>
-          <UserSettingsProvider>
-            <AnnouncementProvider>
-              <ProjectListPageContent />
-            </AnnouncementProvider>
-          </UserSettingsProvider>
+          <TutorialProvider>
+            <UserSettingsProvider>
+              <AnnouncementProvider>
+                <ProjectListPageContent />
+              </AnnouncementProvider>
+            </UserSettingsProvider>
+          </TutorialProvider>
         </SplitTestProvider>
       </ColorPickerProvider>
     </ProjectListProvider>

@@ -1,21 +1,26 @@
-const crypto = require('node:crypto')
-const fs = require('node:fs')
-const Path = require('node:path')
-const { pipeline } = require('node:stream/promises')
-const { createGzip, createGunzip } = require('node:zlib')
-const tarFs = require('tar-fs')
-const _ = require('lodash')
-const {
+// @ts-check
+import crypto from 'node:crypto'
+import fs from 'node:fs'
+import Path from 'node:path'
+import { pipeline } from 'node:stream/promises'
+import { crc32, createGzip, createGunzip } from 'node:zlib'
+import tarFs from 'tar-fs'
+import _ from 'lodash'
+import {
   fetchNothing,
   fetchStream,
   RequestFailedError,
-} = require('@overleaf/fetch-utils')
-const logger = require('@overleaf/logger')
-const Metrics = require('@overleaf/metrics')
-const Settings = require('@overleaf/settings')
-const { MeteredStream } = require('@overleaf/stream-utils')
-const { CACHE_SUBDIR } = require('./OutputCacheManager')
-const { isExtraneousFile } = require('./ResourceWriter')
+} from '@overleaf/fetch-utils'
+import logger from '@overleaf/logger'
+import Metrics from '@overleaf/metrics'
+import Settings from '@overleaf/settings'
+import { MeteredStream } from '@overleaf/stream-utils'
+import OutputCacheManager from './OutputCacheManager.js'
+import ResourceWriter from './ResourceWriter.js'
+import OError from '@overleaf/o-error'
+
+const { CACHE_SUBDIR } = OutputCacheManager
+const { isExtraneousFile } = ResourceWriter
 
 const TIMEOUT = 5_000
 /**
@@ -26,21 +31,55 @@ const TIMING_BUCKETS = [
   0, 10, 100, 1000, 2000, 5000, 10000, 15000, 20000, 30000,
 ]
 const MAX_ENTRIES_IN_OUTPUT_TAR = 100
+const MAX_BLG_FILES = 50
 const OBJECT_ID_REGEX = /^[0-9a-f]{24}$/
+
+const MIGRATE_FROM = new Date('2026-01-14').getTime()
+const MIGRATE_UNTIL = new Date('2026-01-21').getTime()
 
 /**
  * @param {string} projectId
- * @return {{shard: string, url: string}}
+ * @return {{shard: string, url: string}|undefined}
  */
-function getShard(projectId) {
+function getAvailableShard(projectId) {
+  // Layout of mongodb object id bytes:
   // [timestamp 4bytes][random per machine 5bytes][counter 3bytes]
   //                                          [32bit       4bytes]
   const last4Bytes = Buffer.from(projectId, 'hex').subarray(8, 12)
-  const idx = last4Bytes.readUInt32BE() % Settings.apis.clsiCache.shards.length
-  return Settings.apis.clsiCache.shards[idx]
+  const counter = last4Bytes.readUInt32BE()
+
+  let shards = Settings.apis.clsiCache.shards.slice(
+    0,
+    Settings.apis.clsiCache.currentShards
+  )
+  const now = Date.now()
+  if (
+    now > MIGRATE_FROM &&
+    now < MIGRATE_UNTIL &&
+    (counter % 100) / 100 <
+      (MIGRATE_UNTIL - now) / (MIGRATE_UNTIL - MIGRATE_FROM)
+  ) {
+    shards = Settings.apis.clsiCache.shards.slice(
+      0,
+      Settings.apis.clsiCache.desiredShards
+    )
+  }
+
+  let i = 0
+  while (shards.length > 0) {
+    const idx = crc32(`${projectId}-${i++}`) % shards.length
+    const candidate = shards[idx]
+    if (!isCircuitBreakerTripped(candidate.url)) return candidate
+    shards.splice(idx, 1)
+  }
+  return undefined
 }
 
-function checkCircuitBreaker(url) {
+/**
+ * @param {string} url
+ * @return {boolean}
+ */
+function isCircuitBreakerTripped(url) {
   const lastFailure = lastFailures.get(url) ?? 0
   if (lastFailure) {
     // Circuit breaker that avoids retries for 5-20s.
@@ -52,23 +91,31 @@ function checkCircuitBreaker(url) {
   return false
 }
 
+/**
+ * @param {string} url
+ */
 function tripCircuitBreaker(url) {
   lastFailures.set(url, performance.now()) // The shard is unhealthy. Refresh timestamp of last failure.
 }
+
+/**
+ * @param {string} url
+ */
 function closeCircuitBreaker(url) {
   lastFailures.delete(url) // The shard is back up.
 }
 
 /**
- * @param {string} projectId
- * @param {string} userId
- * @param {string} buildId
- * @param {string} editorId
- * @param {[{path: string}]} outputFiles
- * @param {string} compileGroup
- * @param {Record<string, number>} stats
- * @param {Record<string, number>} timings
- * @param {Record<string, any>} options
+ * @param {Object} opts
+ * @param {string} opts.projectId
+ * @param {string} opts.userId
+ * @param {string} opts.buildId
+ * @param {string} opts.editorId
+ * @param {[{path: string}]} opts.outputFiles
+ * @param {string} opts.compileGroup
+ * @param {Record<string, number>} opts.stats
+ * @param {Record<string, number>} opts.timings
+ * @param {Record<string, any>} opts.options
  * @return {string | undefined}
  */
 function notifyCLSICacheAboutBuild({
@@ -84,11 +131,12 @@ function notifyCLSICacheAboutBuild({
 }) {
   if (!Settings.apis.clsiCache.enabled) return undefined
   if (!OBJECT_ID_REGEX.test(projectId)) return undefined
-  const { url, shard } = getShard(projectId)
-  if (checkCircuitBreaker(url)) return undefined
+  const shardCfg = getAvailableShard(projectId)
+  if (!shardCfg) return undefined
+  const { url, shard } = shardCfg
 
   /**
-   * @param {[{path: string}]} files
+   * @param {{path: string}[]} files
    */
   const enqueue = files => {
     const body = Buffer.from(
@@ -117,7 +165,11 @@ function notifyCLSICacheAboutBuild({
           nFiles: files.length,
           outputPDFSize:
             outputPDF && Buffer.from(JSON.stringify(outputPDF)).byteLength,
-          nPDFCachingRanges: outputPDF?.ranges?.length,
+          nPDFCachingRanges:
+            outputPDF &&
+            'ranges' in outputPDF &&
+            Array.isArray(outputPDF.ranges) &&
+            outputPDF.ranges.length,
         },
         'large clsi-cache request'
       )
@@ -130,13 +182,13 @@ function notifyCLSICacheAboutBuild({
       signal: AbortSignal.timeout(TIMEOUT),
     })
       .then(() => {
-        closeCircuitBreaker()
+        closeCircuitBreaker(url)
       })
       .catch(err => {
-        tripCircuitBreaker()
+        tripCircuitBreaker(url)
         logger.warn(
-          { err, projectId, userId, buildId },
-          'enqueue for clsi cache failed'
+          { err, projectId, userId, buildId, shard },
+          'enqueue for clsi-cache failed'
         )
       })
   }
@@ -148,14 +200,17 @@ function notifyCLSICacheAboutBuild({
         f =>
           f.path === 'output.pdf' ||
           f.path === 'output.log' ||
-          f.path === 'output.synctex.gz' ||
-          f.path.endsWith('.blg')
+          f.path === 'output.synctex.gz'
+      )
+      .concat(
+        outputFiles.filter(f => f.path.endsWith('.blg')).slice(0, MAX_BLG_FILES)
       )
       .map(f => {
+        const lean = { path: f.path }
         if (f.path === 'output.pdf') {
-          return _.pick(f, 'path', 'size', 'contentId', 'ranges')
+          Object.assign(lean, _.pick(f, 'path', 'size', 'contentId', 'ranges'))
         }
-        return _.pick(f, 'path')
+        return lean
       })
   )
 
@@ -166,8 +221,8 @@ function notifyCLSICacheAboutBuild({
     })
     .catch(err => {
       logger.warn(
-        { err, projectId, userId, buildId },
-        'build output.tar.gz for clsi cache failed'
+        { err, projectId, userId, buildId, shard },
+        'build output.tar.gz for clsi-cache failed'
       )
     })
 
@@ -175,10 +230,11 @@ function notifyCLSICacheAboutBuild({
 }
 
 /**
- * @param {string} projectId
- * @param {string} userId
- * @param {string} buildId
- * @param {[{path: string}]} outputFiles
+ * @param {Object} opts
+ * @param {string} opts.projectId
+ * @param {string} opts.userId
+ * @param {string} opts.buildId
+ * @param {[{path: string}]} opts.outputFiles
  * @return {Promise<void>}
  */
 async function buildTarball({ projectId, userId, buildId, outputFiles }) {
@@ -193,7 +249,9 @@ async function buildTarball({ projectId, userId, buildId, outputFiles }) {
   const files = outputFiles.filter(f => !isExtraneousFile(f.path))
   if (files.length > MAX_ENTRIES_IN_OUTPUT_TAR) {
     Metrics.inc('clsi_cache_build_too_many_entries')
-    throw new Error('too many output files for output.tar.gz')
+    throw new OError('too many output files for output.tar.gz', {
+      nFiles: files.length,
+    })
   }
   Metrics.count('clsi_cache_build_files', files.length)
 
@@ -231,8 +289,9 @@ async function downloadOutputDotSynctexFromCompileCache(
 ) {
   if (!Settings.apis.clsiCache.enabled) return false
   if (!OBJECT_ID_REGEX.test(projectId)) return false
-  const { url } = getShard(projectId)
-  if (checkCircuitBreaker(url)) return false
+  const shardCfg = getAvailableShard(projectId)
+  if (!shardCfg) return false
+  const { url, shard } = shardCfg
 
   const timer = new Metrics.Timer(
     'clsi_cache_download',
@@ -253,13 +312,13 @@ async function downloadOutputDotSynctexFromCompileCache(
     )
   } catch (err) {
     if (err instanceof RequestFailedError && err.response.status === 404) {
-      closeCircuitBreaker()
+      closeCircuitBreaker(url)
       timer.done({ status: 'not-found' })
       return false
     }
-    tripCircuitBreaker()
+    tripCircuitBreaker(url)
     timer.done({ status: 'error' })
-    throw err
+    throw OError.tag(err, 'download failed', { shard })
   }
   await fs.promises.mkdir(outputDir, { recursive: true })
   const dst = Path.join(outputDir, 'output.synctex.gz')
@@ -274,13 +333,14 @@ async function downloadOutputDotSynctexFromCompileCache(
     )
     await fs.promises.rename(tmp, dst)
   } catch (err) {
-    tripCircuitBreaker()
+    if (isENOENT(err)) return false
+    tripCircuitBreaker(url)
     try {
       await fs.promises.unlink(tmp)
     } catch {}
-    throw err
+    throw OError.tag(err, 'stream failed', { shard })
   }
-  closeCircuitBreaker()
+  closeCircuitBreaker(url)
   timer.done({ status: 'success' })
   return true
 }
@@ -294,8 +354,9 @@ async function downloadOutputDotSynctexFromCompileCache(
 async function downloadLatestCompileCache(projectId, userId, compileDir) {
   if (!Settings.apis.clsiCache.enabled) return false
   if (!OBJECT_ID_REGEX.test(projectId)) return false
-  const { url } = getShard(projectId)
-  if (checkCircuitBreaker(url)) return false
+  const shardCfg = getAvailableShard(projectId)
+  if (!shardCfg) return false
+  const { url, shard } = shardCfg
 
   const timer = new Metrics.Timer(
     'clsi_cache_download',
@@ -316,13 +377,13 @@ async function downloadLatestCompileCache(projectId, userId, compileDir) {
     )
   } catch (err) {
     if (err instanceof RequestFailedError && err.response.status === 404) {
-      closeCircuitBreaker()
+      closeCircuitBreaker(url)
       timer.done({ status: 'not-found' })
       return false
     }
-    tripCircuitBreaker()
+    tripCircuitBreaker(url)
     timer.done({ status: 'error' })
-    throw err
+    throw OError.tag(err, 'download failed', { shard })
   }
   let n = 0
   let abort = false
@@ -366,16 +427,24 @@ async function downloadLatestCompileCache(projectId, userId, compileDir) {
       })
     )
   } catch (err) {
-    tripCircuitBreaker()
-    throw err
+    if (isENOENT(err)) return false
+    tripCircuitBreaker(url)
+    throw OError.tag(err, 'stream failed', { shard })
   }
-  closeCircuitBreaker()
+  closeCircuitBreaker(url)
   Metrics.count('clsi_cache_download_entries', n)
   timer.done({ status: 'success' })
   return !abort
 }
 
-module.exports = {
+/**
+ * @param {unknown} err
+ */
+function isENOENT(err) {
+  return err instanceof Error && 'code' in err && err.code === 'ENOENT'
+}
+
+export default {
   notifyCLSICacheAboutBuild,
   downloadLatestCompileCache,
   downloadOutputDotSynctexFromCompileCache,

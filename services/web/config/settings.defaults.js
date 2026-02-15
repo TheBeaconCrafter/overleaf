@@ -92,7 +92,6 @@ const httpPermissionsPolicy = {
     'idle-detection',
     'local-fonts',
     'magnetometer',
-    'microphone',
     'midi',
     'otp-credentials',
     'payment',
@@ -107,6 +106,7 @@ const httpPermissionsPolicy = {
   allowed: {
     autoplay: 'self "https://videos.ctfassets.net"',
     fullscreen: 'self',
+    'on-device-speech-recognition': 'self',
   },
 }
 
@@ -268,7 +268,7 @@ module.exports = {
       url: `http://${process.env.WEBPACK_HOST || '127.0.0.1'}:3808`,
     },
     wiki: {
-      url: process.env.WIKI_URL || 'https://learn.sharelatex.com',
+      url: process.env.WIKI_URL || 'https://learnwiki.overleaf.com',
       maxCacheAge: parseInt(process.env.WIKI_MAX_CACHE_AGE || 5 * minutes, 10),
     },
 
@@ -369,6 +369,9 @@ module.exports = {
   multerOptions: {
     preservePath: process.env.MULTER_PRESERVE_PATH,
   },
+
+  notifyOnSystemMessageChanges:
+    process.env.NOTIFY_ON_SYSTEM_MESSAGE_CHANGES === 'true',
 
   // start failing the health check if active handles exceeds this limit
   maxActiveHandles: process.env.MAX_ACTIVE_HANDLES
@@ -1013,12 +1016,14 @@ module.exports = {
     importProjectFromGithubMenu: [],
     editorLeftMenuSync: [],
     editorLeftMenuManageTemplate: [],
+    menubarExtraComponents: [],
     oauth2Server: [],
     managedGroupSubscriptionEnrollmentNotification: [],
     managedGroupEnrollmentInvite: [],
     ssoCertificateInfo: [],
     v1ImportDataScreen: [],
     snapshotUtils: [],
+    visualEditorProviders: [],
     usGovBanner: [],
     rollingBuildsUpdatedAlert: [],
     offlineModeToolbarButtons: [],
@@ -1046,7 +1051,7 @@ module.exports = {
     fullProjectSearchPanel: [
       Path.resolve(
         __dirname,
-        '../modules/full-project-search/frontend/js/components/full-project-search-ui.tsx'
+        '../modules/full-project-search/frontend/js/components/full-project-search.tsx'
       ),
     ],
     integrationPanelComponents: [],

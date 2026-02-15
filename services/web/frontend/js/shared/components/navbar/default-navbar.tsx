@@ -14,7 +14,7 @@ import { useContactUsModal } from '@/shared/hooks/use-contact-us-modal'
 import { UserProvider } from '@/shared/context/user-context'
 import { X } from '@phosphor-icons/react'
 import overleafWhiteLogo from '@/shared/svgs/overleaf-white.svg'
-import overleafBlackLogo from '@/shared/svgs/overleaf-black.svg'
+import overleafGreenLogo from '@/shared/svgs/overleaf-green.svg'
 import type { CSSPropertiesWithVariables } from '../../../../../types/css-properties-with-variables'
 import AnnouncementWarningIcon from '@/shared/components/announcement-warning-icon'
 
@@ -60,7 +60,7 @@ function DefaultNavbar(
         style={
           {
             '--navbar-brand-image-default-url': `url("${overleafWhiteLogo}")`,
-            '--navbar-brand-image-redesign-url': `url("${overleafBlackLogo}")`,
+            '--navbar-brand-image-redesign-url': `url("${overleafGreenLogo}")`,
           } as CSSPropertiesWithVariables
         }
         aria-label={t('primary')}

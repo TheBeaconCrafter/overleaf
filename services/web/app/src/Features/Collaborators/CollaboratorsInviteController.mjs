@@ -4,6 +4,7 @@ import UserGetter from '../User/UserGetter.mjs'
 import CollaboratorsGetter from './CollaboratorsGetter.mjs'
 import CollaboratorsInviteHandler from './CollaboratorsInviteHandler.mjs'
 import CollaboratorsInviteGetter from './CollaboratorsInviteGetter.mjs'
+import CollaboratorsInviteHelper from './CollaboratorsInviteHelper.mjs'
 import logger from '@overleaf/logger'
 import Settings from '@overleaf/settings'
 import EmailHelper from '../Helpers/EmailHelper.mjs'
@@ -11,7 +12,7 @@ import EditorRealTimeController from '../Editor/EditorRealTimeController.mjs'
 import AnalyticsManager from '../Analytics/AnalyticsManager.mjs'
 import SessionManager from '../Authentication/SessionManager.mjs'
 import { RateLimiter } from '../../infrastructure/RateLimiter.mjs'
-import { z, zz, validateReq } from '../../infrastructure/Validation.mjs'
+import { z, zz, parseReq } from '../../infrastructure/Validation.mjs'
 import { expressify } from '@overleaf/promise-utils'
 import ProjectAuditLogHandler from '../Project/ProjectAuditLogHandler.mjs'
 import Errors from '../Errors/Errors.js'
@@ -96,7 +97,7 @@ const inviteToProjectSchema = z.object({
 })
 
 async function inviteToProject(req, res) {
-  const { params, body } = validateReq(req, inviteToProjectSchema)
+  const { params, body } = parseReq(req, inviteToProjectSchema)
   const projectId = params.Project_id
   let { email, privileges } = body
   const sendingUser = SessionManager.getSessionUser(req.session)
@@ -171,7 +172,7 @@ async function inviteToProject(req, res) {
     req.ip,
     {
       inviteId: invite._id,
-      privileges,
+      role: CollaboratorsInviteHelper.privilegeLevelToRole(invite.privileges),
     }
   )
 
@@ -202,7 +203,7 @@ async function revokeInvite(req, res) {
       req.ip,
       {
         inviteId: invite._id,
-        privileges: invite.privileges,
+        role: CollaboratorsInviteHelper.privilegeLevelToRole(invite.privileges),
       }
     )
     EditorRealTimeController.emitToRoom(

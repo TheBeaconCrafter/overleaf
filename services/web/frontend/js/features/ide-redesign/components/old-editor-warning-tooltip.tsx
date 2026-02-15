@@ -5,17 +5,17 @@ import { useTranslation } from 'react-i18next'
 import useTutorial from '@/shared/hooks/promotions/use-tutorial'
 import { useCallback, useEffect, useState } from 'react'
 import { useSwitchEnableNewEditorState } from '../hooks/use-switch-enable-new-editor-state'
-import { useEditorContext } from '@/shared/context/editor-context'
 import { canUseNewEditor } from '../utils/new-editor-utils'
+import { useTutorialContext } from '@/shared/context/tutorial-context'
 
-const TUTORIAL_KEY = 'old-editor-warning-tooltip'
+const TUTORIAL_KEY = 'old-editor-warning-tooltip-2'
 
 export default function OldEditorWarningTooltip({
   target,
 }: {
   target: HTMLElement | null
 }) {
-  const { inactiveTutorials } = useEditorContext()
+  const { inactiveTutorials } = useTutorialContext()
   const { t } = useTranslation()
   const { loading, setEditorRedesignStatus } = useSwitchEnableNewEditorState()
 

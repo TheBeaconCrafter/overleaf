@@ -87,10 +87,7 @@ export const useIsNewEditorEnabledAsExistingUser = () => {
 }
 
 export const useIsNewEditorEnabled = () => {
-  const { userSettings } = useUserSettingsContext()
-  const hasAccess = canUseNewEditor()
-  const enabled = userSettings.enableNewEditor
-  return hasAccess && enabled
+  return canUseNewEditor()
 }
 
 export const useIsNewToNewEditor = () => {
