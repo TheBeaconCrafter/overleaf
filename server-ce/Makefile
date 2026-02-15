@@ -1,4 +1,6 @@
 # Makefile
+# BuildKit is required for COPY --parents and cache mounts in the Dockerfile
+export DOCKER_BUILDKIT := 1
 
 MONOREPO_ROOT := ../
 HERE=$(shell pwd)

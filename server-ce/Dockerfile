@@ -7,25 +7,22 @@ FROM $OVERLEAF_BASE_TAG
 
 WORKDIR /overleaf
 
-# Add required source files for npm install
-# -----------------------------------------
-COPY --parents libraries/*/package.json patches/ services/*/package.json tools/migrations/ package.json package-lock.json /overleaf/
+# Add required source files for npm install (no --parents: works with classic Docker builder)
+# ------------------------------------------------------------------------------------------
+COPY package.json package-lock.json /overleaf/
+COPY patches/ /overleaf/patches/
+COPY tools/migrations/ /overleaf/tools/migrations/
+COPY libraries/ /overleaf/libraries/
+COPY services/ /overleaf/services/
 COPY server-ce/genScript.js server-ce/services.js /overleaf/
 
 # Install npm dependencies
 # ------------------------
-RUN --mount=type=cache,target=/root/.cache \
-    --mount=type=cache,target=/root/.npm \
-    --mount=type=cache,target=/overleaf/services/web/node_modules/.cache,id=server-ce-webpack-cache \
-    --mount=type=tmpfs,target=/tmp node genScript install | bash
+RUN node genScript install | bash
 
-# Add the actual source files
-# ---------------------------
-COPY --parents libraries/ services/ tools/migrations/ /overleaf/
-RUN --mount=type=cache,target=/root/.cache \
-    --mount=type=cache,target=/root/.npm \
-    --mount=type=cache,target=/overleaf/services/web/node_modules/.cache,id=server-ce-webpack-cache \
-    --mount=type=tmpfs,target=/tmp node genScript compile | bash
+# Compile (source already in place from above)
+# -------------------------------------------
+RUN node genScript compile | bash
 
 # Copy runit service startup scripts to its location
 # --------------------------------------------------
